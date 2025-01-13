@@ -1,0 +1,19 @@
+# vs code temps
+.vscode/
+
+# vim temp files
+*.*~
+
+# dotnet junk
+obj/
+
+# media files
+*.mp4
+*.mp3
+
+# py envs
+venv/
+virt/
+
+# node_modules
+node_modules/
