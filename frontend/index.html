@@ -1,14 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HireStream - Your Efficient job finder!</title>
     <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="./assets/js/index.js"></script>
 </head>
+
 <body>
-    
+
+    <!-- navbar start -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Hire Stream</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Sign up</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Login</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            User Option
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">User Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#">Job Alert</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Find Jobs</a></li>
+                        </ul>
+                    </li>
+                    <!-- <li class="nav-item">
+                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+              </li> -->
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <!-- navbar end -->
+
+    <!-- hero section start -->
+    <section class="hero bg-image position-relative"
+        style="background-image: url('./assets/img/hero.jpg'); height: 100vh; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center;">
+        <!-- Overlay -->
+        <div class="overlay position-absolute top-0 start-0 w-100 h-100" style="background-color: rgba(0, 0, 0, 0.5);">
+        </div>
+
+        <!-- Content -->
+        <div class="text-center text-white position-relative z-index-2">
+            <h1 class="display-3 mb-4">Welcome to HireStream</h1>
+            <p class="lead mb-5">Find your dream job today with ease!</p>
+            <a href="#" class="btn btn-primary btn-lg me-3">Get Started</a>
+            <a href="#" class="btn btn-outline-light btn-lg">Learn More</a>
+        </div>
+    </section>
+
+
+    <!-- hero section end -->
+
+    <div class="container">
+        <hr>
+            <p class="fs-1 text-center"><strong class="text-secondary">Why Choose Us?</strong></p>
+        <hr>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-lg border-light rounded">
+                <div class="card-body">
+                    <!-- Isometric Icon -->
+                    <div class="mb-3">
+                        <img src="./assets/img/iso-1.jpg" alt="Job Icon" style="width: 360px;">
+                    </div>
+                    <h5 class="card-title">Secure Platform</h5>
+                    <p class="card-text">Privacy matters the most and we make sure that everything remains intact and
+                        secure</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg border-light rounded">
+                <div class="card-body">
+                    <!-- Isometric Icon -->
+                    <div class="mb-3">
+                        <img src="./assets/img/iso-2.jpg" alt="Job Icon" style="width: 360px;">
+                    </div>
+                    <h5 class="card-title">Job Opportunities</h5>
+                    <p class="card-text">Explore a wide range of job opportunities tailored to your skills and career goals.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg border-light rounded">
+                <div class="card-body">
+                    <!-- Isometric Icon -->
+                    <div class="mb-3">
+                        <img src="./assets/img/iso-3.jpg" alt="Job Icon" style="width: 360px;">
+                    </div>
+                    <h5 class="card-title">Latest Tech Stack</h5>
+                    <p class="card-text">Built on industry standard frameworks for security and ease of use</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- about section start -->
+     
+    <!-- about section end -->
+
+    <!-- footer start -->
+    <footer class="bg-dark text-white
+    bg-dark text-white">
+        <div class="row bg-dark text-white">
+            <div class="col-md-4 text-center">
+                <p class="fs-5 text-center"><strong>Address</strong></p>
+                <p class="fs-6">Office No. 3, 27 West Lane, Montana City, MT, USA</p>
+                <p class="fs-6"><a href="tel:015 881 6399" class="nav-link">015 881 6399</a></p>
+                <p class="fs-6"><a href="mailto:hirestream@outlook.com" class="nav-link">hirestream@outlook.com</a></p>
+            </div>
+            <div class="col-md-4 text-center">
+                <p class="fs-5 text-center"><strong>Quick Links</strong></p>
+                <p class="fs-6"><a href="#" class="nav-link">Home</a></p>
+                <p class="fs-6"><a href="#" class="nav-link">Services</a></p>
+                <p class="fs-6"><a href="#" class="nav-link">Contact Us</a></p>
+                <p class="fs-6"><a href="#" class="nav-link">Privacy Policy</a></p>
+            </div>
+            <div class="col-md-4 text-center">
+                <p class="fs-5"><strong>Newsletter</strong></p>
+                <p class="fs-6">Subscribe to our newsletter to get the latest updates about our events, services and products.</p>
+                <form class="d-flex" role="search">
+                    <div class="input-group">
+                      <input class="form-control" type="email" placeholder="Enter your email" aria-label="Email" required>
+                      <button class="btn btn-success" type="submit">Subscribe</button>
+                    </div>
+                </form>                  
+            </div>
+        </div>
+        <hr>
+        <div class="row bg-dark text-white">
+            <div class="col-md-6">
+                <p class="fs-6 text-center"><strong>&copy; Hire Stream</strong> All rights reserved <span id="year-tag"></span></p>
+            </div>
+            <div class="col-md-6">
+                <p class="fs-6 text-center">Developed by: <strong>UZIH</strong></p>
+            </div>
+        </div>
+    </footer>
+    <!-- footer end -->
+
     <script src="./assets/js/script.js"></script>
+    <!-- <script src="./assets/bootstrap/js/bootstrap.bundle.js"></script> -->
+    <!-- <script src="./assets/bootstrap/js/bootstrap.min.js"></script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script> -->
 </body>
+
 </html>
