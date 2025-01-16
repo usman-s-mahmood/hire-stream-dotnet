@@ -1,5 +1,6 @@
 # vs code temps
 .vscode/
+.vs/
 
 # vim temp files
 *.*~
