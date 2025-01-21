@@ -1,0 +1,8 @@
+@{
+    ViewData["Controller"] = "Home";
+    ViewData["Action"] = "Services";
+}
+
+@await Html.PartialAsync("_Header", null, ViewData)
+@await Html.PartialAsync("_Features")
+@await Html.PartialAsync("_FAQs")
