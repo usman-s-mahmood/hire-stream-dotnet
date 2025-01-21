@@ -184,3 +184,21 @@
         transform: translateX(-100%);
     }
 }
+
+.carousel-caption.overlay {
+    background: rgba(0, 0, 0, 0.6); /* Black overlay with transparency */
+    color: #fff; /* White text for visibility */
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left; /* Align text to the left */
+  }
+
+  .carousel-caption h5 {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .carousel-caption p {
+    font-size: 1rem;
+    margin-top: 5px;
+  }
