@@ -21,7 +21,19 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
 
+        public IActionResult DeleteUser() {
+            return View(); // this also does not require any view so use something like a redirect for this
+        }
+
         public IActionResult ForgotPassword() {
+            return View();
+        }
+
+        public IActionResult CreateProfile() {
+            return View();
+        }
+
+        public IActionResult EditProfile() {
             return View();
         }
 
