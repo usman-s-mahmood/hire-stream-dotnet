@@ -1,5 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
-
+// downgrade this garbage to dotnet 8
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
