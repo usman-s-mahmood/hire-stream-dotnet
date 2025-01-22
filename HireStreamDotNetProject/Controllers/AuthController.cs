@@ -12,5 +12,21 @@ namespace HireStreamDotNetProject.Controllers
         {
             return View();
         }
+
+        public IActionResult Signup() {
+            return View();
+        }
+
+        public IActionResult EditUser() {
+            return View();
+        }
+
+        public IActionResult ForgotPassword() {
+            return View();
+        }
+
+        public IActionResult Logout() {
+            return View(); // this does not need a view, so use something like a redirect
+        }
     }
 }

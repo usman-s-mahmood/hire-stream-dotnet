@@ -1,0 +1,20 @@
+@{
+    ViewData["Controller"]="Auth";
+    ViewData["Action"]="Login";
+}
+
+@await Html.PartialAsync("_Header", null, ViewData);
+
+<div class="container shadow rounded">
+    <h3 class="text-center mb-4 text-primary">Login</h3>
+    <form action="" class="form-control p-5" method=POST>
+        <label for="" class="form-label">Your Email</label>
+        <input type="email" class="form-control outline-primary" placeholder="Enter your email" required>
+        <label for="" class="form-label">Your Password</label>
+        <input type="password" class="form-control outline-primary" placeholder="Enter your password" required>
+        <hr>
+        <button class="btn btn-success">Submit</button>
+        <br>
+    <a href="/Auth/ForgotPassword" class="nav-link">Forgot Password?</a> <!--This is to be implemented!-->
+    </form>
+</div>
