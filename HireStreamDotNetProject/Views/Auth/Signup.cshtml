@@ -24,6 +24,15 @@
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control outline-primary" id="email" name="email" placeholder="Enter your email" required>
         </div>
+        <!-- Gender Dropdown -->
+        <label for="gender" class="form-label mt-3">Gender</label>
+        <select id="gender" name="gender" class="form-select outline-primary" required>
+            <option value="" disabled selected>Select your gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+        </select>
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control outline-primary" id="password" name="password" placeholder="Enter your password" minlength="8" required>
