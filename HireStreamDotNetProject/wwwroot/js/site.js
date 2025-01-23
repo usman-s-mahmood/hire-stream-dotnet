@@ -2,9 +2,3 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-
-try {
-    document.getElementById('year-tag').innerHTML = new Date().getFullYear();
-} catch(error) {
-    console.error("year tag not found!");
-}
