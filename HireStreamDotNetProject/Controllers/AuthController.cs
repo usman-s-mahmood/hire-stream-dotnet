@@ -10,6 +10,10 @@ namespace HireStreamDotNetProject.Controllers
         // GET: /Auth/
         public IActionResult Index()
         {
+            return Redirect("Auth/Login");
+        }
+
+        public IActionResult Login() {
             return View();
         }
 
