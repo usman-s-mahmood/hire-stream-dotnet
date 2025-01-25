@@ -5,17 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 using HireStreamDotNetProject.Data;
 using HireStreamDotNetProject.Models;
 using DevOne.Security.Cryptography.BCrypt;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using JWT;
+using HireStreamDotNetProject.Utils;
 
 namespace HireStreamDotNetProject.Controllers
 {
     public class AuthController : Controller
     {
         protected readonly ApplicationDbContext _db;
-
-        public AuthController(HireStreamDotNetProject.Data.ApplicationDbContext db) {
+        protected readonly IConfiguration _config;
+        protected readonly Utils.TokenService _tokenService;
+        public AuthController(HireStreamDotNetProject.Data.ApplicationDbContext db, IConfiguration config, Utils.TokenService tokenService) {
             _db = db;
+            _config = config;
+            _tokenService = tokenService;
         }
         // GET: /Auth/
         public IActionResult Index()
@@ -25,11 +27,23 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpGet]
         public IActionResult Login() {
+            string? auth_token = HttpContext.Session.GetString("AuthToken");
+            System.Console.WriteLine($"auth_token==null: {auth_token == null}");
+            if (auth_token != null) {
+                TempData["error"] = "You are already logged in!";
+                return RedirectToAction("Dashboard");
+            }
             return View();
         }
 
         [HttpPost]
         public IActionResult Login(string email, string password) {
+            string? auth_token = HttpContext.Session.GetString("AuthToken");
+            System.Console.WriteLine($"auth_token==null: {auth_token == null}");
+            if (auth_token != null) {
+                TempData["error"] = "You are already logged in!";
+                return RedirectToAction("Dashboard");
+            }
             User? user = _db.Users.FirstOrDefault(o => o.Email == email);
             if (user == null) {
                 ModelState.AddModelError(
@@ -47,6 +61,13 @@ namespace HireStreamDotNetProject.Controllers
 
             if (check_password) {
                 TempData["success"] = "You are now Logged In!";
+                string jsonPayload = $"{{\"email\":\"{user.Email}\",\"username\":\"{user.Username}\"}}";
+                string? token = _tokenService.GenerateToken(jsonPayload);
+                HttpContext.Session.SetString(
+                    "AuthToken", 
+                    token
+                );
+                System.Console.WriteLine($"AuthToken: {token}");
                 return RedirectToAction("Dashboard");
             }
             else {
@@ -57,11 +78,16 @@ namespace HireStreamDotNetProject.Controllers
                 TempData["error"] = "Password Mismatch! Try Again";
                 return View();
             }
-            return View();
         }
 
         [HttpGet]
         public IActionResult Signup() {
+            string? auth_token = HttpContext.Session.GetString("AuthToken");
+            System.Console.WriteLine($"auth_token==null: {auth_token == null}");
+            if (auth_token != null) {
+                TempData["error"] = "You are already logged in!";
+                return RedirectToAction("Dashboard");
+            }
             return View();
         }
         [HttpPost]
@@ -130,7 +156,34 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Dashboard() {
+            string? auth_token = HttpContext.Session.GetString("AuthToken");
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            var payload = _tokenService.DecryptToken(auth_token);
+            // System.Console.WriteLine(payload);
+
+            var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+            string? email = data["email"];
+            string? username = data["username"];
+
+            User? user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+            if (user == null) {
+                HttpContext.Session.Remove("AuthToken");
+                TempData["error"] = "Login To Continue";
+                return RedirectToAction("Login");
+            }
+            
+            ViewBag.Email = user.Email;
+            ViewBag.Username = user.Username;
+            ViewBag.FirstName = user.FirstName;
+            ViewBag.LastName = user.LastName;
+
             return View();
         }
 
