@@ -16,8 +16,10 @@ namespace HireStreamDotNetProject.Models {
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? Gender { get; set; }
+        public string? Password { get; set; }
         public bool IsActive {get; set;} = true;
         public bool IsStaff {get; set;} = false;
         public bool IsAdmin {get; set;} = false;
+        public DateTime RegisterDate {get; set;} = DateTime.Now;
     }
 }
