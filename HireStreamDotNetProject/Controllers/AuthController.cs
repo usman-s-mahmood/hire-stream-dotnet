@@ -6,6 +6,7 @@ using HireStreamDotNetProject.Data;
 using HireStreamDotNetProject.Models;
 using DevOne.Security.Cryptography.BCrypt;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using JWT;
 
 namespace HireStreamDotNetProject.Controllers
 {
