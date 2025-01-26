@@ -229,5 +229,46 @@ namespace HireStreamDotNetProject.Controllers
             TempData["error"] = "Login First to logout!";
             return RedirectToAction("Login");
         }
+
+        [HttpGet]
+        [Route("Auth/VerifyToken")]
+        public IActionResult VerifyToken() {
+            string? authToken = Request.Cookies["AuthCookie"];
+            if (authToken == null)
+            {
+                return Json(new { isAuthenticated = false });
+            }
+
+            try
+            {
+                var payload = _tokenService.DecryptToken(authToken);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+                string? email = data?["email"];
+                string? username = data?["username"];
+
+                User? user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user != null)
+                {
+                    return Json(new
+                    {
+                        isAuthenticated = true,
+                        user = new
+                        {
+                            user.Email,
+                            user.Username,
+                            user.FirstName,
+                            user.LastName
+                        }
+                    });
+                }
+            }
+            catch
+            {
+                // Handle token decryption/validation failure
+            }
+
+            return Json(new { isAuthenticated = false });
+        }
     }
 }
