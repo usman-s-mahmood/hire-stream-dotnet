@@ -28,7 +28,7 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpGet]
         public IActionResult Login() {
-            string? auth_token = HttpContext.Session.GetString("AuthToken");
+            string? auth_token = Request.Cookies["AuthCookie"];
             System.Console.WriteLine($"auth_token==null: {auth_token == null}");
             if (auth_token != null) {
                 TempData["error"] = "You are already logged in!";
@@ -39,7 +39,7 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpPost]
         public IActionResult Login(string email, string password) {
-            string? auth_token = HttpContext.Session.GetString("AuthToken");
+            string? auth_token = Request.Cookies["AuthCookie"];
             System.Console.WriteLine($"auth_token==null: {auth_token == null}");
             if (auth_token != null) {
                 TempData["error"] = "You are already logged in!";
@@ -92,8 +92,10 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpGet]
         public IActionResult Signup() {
-            string? auth_token = HttpContext.Session.GetString("AuthToken");
-            System.Console.WriteLine($"auth_token==null: {auth_token == null}");
+            // string? auth_token = HttpContext.Session.GetString("AuthToken");
+            // System.Console.WriteLine($"auth_token==null: {auth_token == null}");
+            var auth_token = Request.Cookies["AuthCookie"];
+            System.Console.WriteLine(auth_token);
             if (auth_token != null) {
                 TempData["error"] = "You are already logged in!";
                 return RedirectToAction("Dashboard");
@@ -102,6 +104,12 @@ namespace HireStreamDotNetProject.Controllers
         }
         [HttpPost]
         public IActionResult Signup(string username, string first_name, string last_name, string email, string password, string gender) {
+            var auth_token = Request.Cookies["AuthCookie"];
+            System.Console.WriteLine(auth_token);
+            if (auth_token != null) {
+                TempData["error"] = "You are already logged in!";
+                return RedirectToAction("Dashboard");
+            }
             var salt = BCryptHelper.GenerateSalt(10);
             var hash = BCryptHelper.HashPassword(
                 password,
@@ -168,9 +176,10 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpGet]
         public IActionResult Dashboard() {
-            string? auth_token = HttpContext.Session.GetString("AuthToken");
+            string? auth_token = Request.Cookies["AuthCookie"];
+            System.Console.WriteLine(auth_token);
             if (auth_token == null) {
-                TempData["error"] = "Login To Continue!";
+                TempData["error"] = "Login to continue!";
                 return RedirectToAction("Login");
             }
             var payload = _tokenService.DecryptToken(auth_token);
@@ -199,12 +208,12 @@ namespace HireStreamDotNetProject.Controllers
         }
 
         public IActionResult Logout() {
-            if (Request.Cookies["AuthCookie"] != null)
+            string? auth_token = Request.Cookies["AuthCookie"];
+            System.Console.WriteLine(auth_token);
+            if (Request.Cookies["AuthCookie"] != null) {
                 Response.Cookies.Delete("AuthCookie");
-            if (HttpContext.Session.GetString("AuthToken") != null) {
-                HttpContext.Session.Remove("AuthToken");
                 TempData["success"] = "You are now logged out!";
-                return RedirectToAction("Login"); // this does not need a view, so use something like a redirect
+                return RedirectToAction("Login");
             }
             TempData["error"] = "Login First to logout!";
             return RedirectToAction("Login");
