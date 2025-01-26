@@ -64,10 +64,6 @@ namespace HireStreamDotNetProject.Controllers
                 TempData["success"] = "You are now Logged In!";
                 string jsonPayload = $"{{\"email\":\"{user.Email}\",\"username\":\"{user.Username}\"}}";
                 string? token = _tokenService.GenerateToken(jsonPayload);
-                HttpContext.Session.SetString(
-                    "AuthToken", 
-                    token
-                );
                 System.Console.WriteLine($"AuthToken: {token}");
                 CookieOptions options = new CookieOptions{
                     HttpOnly = false,
