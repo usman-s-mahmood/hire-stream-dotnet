@@ -25,5 +25,6 @@ namespace HireStreamDotNetProject.Models {
         public string ProfilePic {get; set;} = "";
         public string AboutUser {get; set;} = "";
         public string SocialLink {get; set;} = "";
+        public string UserRole {get; set;} = "Applicant"; // Either Recruiter or Applicant
     }
 }

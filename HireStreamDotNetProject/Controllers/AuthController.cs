@@ -194,10 +194,25 @@ namespace HireStreamDotNetProject.Controllers
                 return RedirectToAction("Login");
             }
             
+            string profile_pic = " ";
+
+            if (user.ProfilePic != "")
+                profile_pic = user.ProfilePic;
+            else if (user.ProfilePic == "" && user.Gender == "Male")
+                profile_pic = "~/assets/default-img/DefaultUserMale.png";
+            
+            else if (user.ProfilePic == "" && user.Gender == "Female")
+                profile_pic = "~/assets/default-img/DefaultUserFemale.png";
+
+            else if (user.ProfilePic == "" && user.Gender != "Male" && user.Gender != "Female")
+                profile_pic = "~/assets/default-img/DefaultUserMale.png";
+            System.Console.WriteLine($"Value of profile pic: {profile_pic} | Value of user profile pic: {user.ProfilePic == ""}");
             ViewBag.Email = user.Email;
             ViewBag.Username = user.Username;
             ViewBag.FirstName = user.FirstName;
             ViewBag.LastName = user.LastName;
+            ViewBag.Gender = user.Gender;
+            ViewBag.ProfilePic = profile_pic;
             ViewBag.IsAuth = true;
 
             return View();

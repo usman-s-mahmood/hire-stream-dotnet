@@ -12,12 +12,13 @@
         <!-- First Row -->
         <div class="col-md-4 text-center border-end">
             <!-- User Image -->
-            <img src="/path/to/default-image.jpg" class="img-fluid rounded-circle mb-3" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;">
+            <img src="@Url.Content(ViewData["ProfilePic"].ToString())" class="img-fluid rounded-circle mb-3" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;">
+
             <!-- Buttons -->
             <div class="d-grid gap-2">
                 <a href="/Auth/EditAccount" class="btn btn-success">Edit Account</a>
                 <a href="/Auth/DeleteAccount" class="btn btn-danger">Delete Account</a>
-                <a href="/Auth/ChangePassword" class="btn btn-info">Change Password</a>
+                <a href="/Auth/ChangePassword" class="btn btn-secondary">Change Password</a>
             </div>
         </div>
         <div class="col-md-8 text-center">
