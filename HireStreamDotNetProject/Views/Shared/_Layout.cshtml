@@ -38,27 +38,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/Home/Contact">Contact Us</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="register">
                         <a class="nav-link" href="/Auth/Signup">Sign up</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="login">
                         <a class="nav-link" href="/Auth/Login">Login</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            User Option
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Auth/Dashboard">User Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/Talent/PostJob">Post a Job<a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li><a class="dropdown-item" href="/Seeker/FindJob">Find Jobs</a></li>
-                            <li><a class="dropdown-item" href="/Auth/EditUser">Edit Account</a></li>
-                            <li><a class="dropdown-item" href="/Auth/Logout">Logout</a></li>
-                        </ul>
+                    </li>                    
+                    <li class="nav-item dropdown" id="user-ops">
+                        
                     </li>
                     <!-- <li class="nav-item">
                 <a class="nav-link disabled" aria-disabled="true">Disabled</a>
@@ -118,7 +105,43 @@
     </div>
     <!-- footer end -->
 
-
+    <script>
+        function getCookie(name) {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) 
+                    return cookie.substring(name.length + 1);
+            }
+            return null;
+        }
+        let authCookie = getCookie("AuthCookie");
+        if (authCookie == null) {
+            document.getElementById("register").innerHTML = `<a class="nav-link" href="/Auth/Signup">Sign up</a>`;
+            document.getElementById('dashboard').innerHTML = '';
+            document.getElementById('login').innerHTML = `<a class="nav-link" href="/Auth/Login">Login</a>`;
+            document.getElementById('user-ops').innerHTML = ``;
+            
+        }
+        else {
+            document.getElementById("register").innerHTML = '';
+            document.getElementById('login').innerHTML = '';
+            document.getElementById('user-ops').innerHTML = `<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            User Option
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Auth/Dashboard">User Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/Talent/PostJob">Post a Job<a></li>
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+                            <li><a class="dropdown-item" href="/Seeker/FindJob">Find Jobs</a></li>
+                            <li><a class="dropdown-item" href="/Auth/EditUser">Edit Account</a></li>
+                            <li><a class="dropdown-item" href="/Auth/Logout">Logout</a></li>
+                        </ul>`;
+        }
+    </script>
     <script src="~/assets/js/script.js"></script>
     <!-- <script src="./assets/bootstrap/js/bootstrap.bundle.js"></script> -->
     <!-- <script src="./assets/bootstrap/js/bootstrap.min.js"></script> -->

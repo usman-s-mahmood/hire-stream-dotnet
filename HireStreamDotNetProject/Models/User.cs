@@ -22,5 +22,8 @@ namespace HireStreamDotNetProject.Models {
         public bool IsStaff {get; set;} = false;
         public bool IsAdmin {get; set;} = false;
         public DateTime RegisterDate {get; set;} = DateTime.Now;
+        public string ProfilePic {get; set;} = "";
+        public string AboutUser {get; set;} = "";
+        public string SocialLink {get; set;} = "";
     }
 }

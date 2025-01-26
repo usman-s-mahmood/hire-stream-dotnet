@@ -6,6 +6,7 @@ using HireStreamDotNetProject.Data;
 using HireStreamDotNetProject.Models;
 using DevOne.Security.Cryptography.BCrypt;
 using HireStreamDotNetProject.Utils;
+using System.Net;
 
 namespace HireStreamDotNetProject.Controllers
 {
@@ -68,6 +69,15 @@ namespace HireStreamDotNetProject.Controllers
                     token
                 );
                 System.Console.WriteLine($"AuthToken: {token}");
+                CookieOptions options = new CookieOptions{
+                    HttpOnly = false,
+                    Expires = DateTime.UtcNow.AddHours(1)
+                };
+                Response.Cookies.Append(
+                    "AuthCookie",
+                    token,
+                    options
+                );
                 return RedirectToAction("Dashboard");
             }
             else {
@@ -183,12 +193,21 @@ namespace HireStreamDotNetProject.Controllers
             ViewBag.Username = user.Username;
             ViewBag.FirstName = user.FirstName;
             ViewBag.LastName = user.LastName;
+            ViewBag.IsAuth = true;
 
             return View();
         }
 
         public IActionResult Logout() {
-            return View(); // this does not need a view, so use something like a redirect
+            if (Request.Cookies["AuthCookie"] != null)
+                Response.Cookies.Delete("AuthCookie");
+            if (HttpContext.Session.GetString("AuthToken") != null) {
+                HttpContext.Session.Remove("AuthToken");
+                TempData["success"] = "You are now logged out!";
+                return RedirectToAction("Login"); // this does not need a view, so use something like a redirect
+            }
+            TempData["error"] = "Login First to logout!";
+            return RedirectToAction("Login");
         }
     }
 }
