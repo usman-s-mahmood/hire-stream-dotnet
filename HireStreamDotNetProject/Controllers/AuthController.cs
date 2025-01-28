@@ -150,7 +150,8 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
 
-        public IActionResult EditUser() {
+        [HttpGet]
+        public IActionResult EditUser()  {
             string? auth_token = Request.Cookies["AuthCookie"];
             if (auth_token == null) {
                 TempData["error"] = "Login To Continue!";
@@ -178,6 +179,33 @@ namespace HireStreamDotNetProject.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult EditUser(User obj) {
+            TempData["success"] = "User Data was received check console!";
+            System.Console.WriteLine($"User details\n{obj.FirstName} {obj.LastName}\n{obj.Id}\n{obj.Email} | {obj.Username}");
+
+            string? auth_token = Request.Cookies["AuthCookie"];
+
+            System.Console.WriteLine($"token: {auth_token} | decrypted token: {_tokenService.DecryptToken(auth_token)}");
+            
+            
+            User? email_check = _db.Users.FirstOrDefault(o => o.Email == obj.Email && o.Id != obj.Id);
+                if (email_check != null) {
+                    TempData["error"] = "Provide a unique email";
+                    return View(obj);
+                }
+                User? username_check = _db.Users.FirstOrDefault(o => o.Username == obj.Username && o.Id != obj.Id);
+                if (username_check != null) {
+                    TempData["error"] = "Provide a unique username";
+                    return View(obj);
+                }
+
+                _db.Users.Update(obj);
+                _db.SaveChanges();
+
+                TempData["success"] = "Details Updated!";
+                return RedirectToAction("Dashboard");
+        }
         public IActionResult DeleteUser() {
             return View(); // this also does not require any view so use something like a redirect for this
         }
