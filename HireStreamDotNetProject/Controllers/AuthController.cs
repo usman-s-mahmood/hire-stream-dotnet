@@ -151,7 +151,31 @@ namespace HireStreamDotNetProject.Controllers
         }
 
         public IActionResult EditUser() {
-            return View();
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+                
+                string? email = data["email"];
+                string? username = data["username"];
+                
+                User? user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Login To Continue";
+                    return RedirectToAction("Login");
+                }
+
+                return View(user);
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                return RedirectToAction("Login");
+            }
         }
 
         public IActionResult DeleteUser() {
@@ -189,7 +213,8 @@ namespace HireStreamDotNetProject.Controllers
             User? user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
 
             if (user == null) {
-                HttpContext.Session.Remove("AuthToken");
+                // HttpContext.Session.Remove("AuthToken");
+                Response.Cookies.Delete("AuthCookie");
                 TempData["error"] = "Login To Continue";
                 return RedirectToAction("Login");
             }
@@ -234,13 +259,10 @@ namespace HireStreamDotNetProject.Controllers
         [Route("Auth/VerifyToken")]
         public IActionResult VerifyToken() {
             string? authToken = Request.Cookies["AuthCookie"];
-            if (authToken == null)
-            {
-                return Json(new { isAuthenticated = false });
-            }
+            if (authToken == null) 
+                return RedirectToAction("Login");
 
-            try
-            {
+            try {
                 var payload = _tokenService.DecryptToken(authToken);
                 var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
                 string? email = data?["email"];
@@ -248,13 +270,10 @@ namespace HireStreamDotNetProject.Controllers
 
                 User? user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
 
-                if (user != null)
-                {
-                    return Json(new
-                    {
+                if (user != null) {
+                    return Json(new {
                         isAuthenticated = true,
-                        user = new
-                        {
+                        user = new {
                             user.Email,
                             user.Username,
                             user.FirstName,
@@ -262,13 +281,17 @@ namespace HireStreamDotNetProject.Controllers
                         }
                     });
                 }
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
             }
-            catch
-            {
-                // Handle token decryption/validation failure
+            catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Invalid Request";
+                return RedirectToAction("Login");
             }
 
-            return Json(new { isAuthenticated = false });
+            // return Json(new { isAuthenticated = false });
         }
     }
 }
