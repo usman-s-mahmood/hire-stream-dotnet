@@ -9,6 +9,7 @@
 
 <div class="container">
     <form method="post" asp-action="EditUser" class="form-control">
+        <div asp-validation-summary="All" class="text-center text-danger"></div> 
         <input type="hidden" asp-for="Id" />
         <label for="">First Name</label>
         <input type="text" class="form-control" asp-for="FirstName">

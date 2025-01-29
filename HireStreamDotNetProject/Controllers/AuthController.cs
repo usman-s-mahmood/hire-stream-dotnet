@@ -181,33 +181,129 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpPost]
         public IActionResult EditUser(User obj) {
-            TempData["success"] = "User Data was received check console!";
-            System.Console.WriteLine($"User details\n{obj.FirstName} {obj.LastName}\n{obj.Id}\n{obj.Email} | {obj.Username}");
+            // TempData["success"] = "User Data was received check console!";
+            // System.Console.WriteLine($"User details\n{obj.FirstName} {obj.LastName}\n{obj.Id}\n{obj.Email} | {obj.Username}");
 
             string? auth_token = Request.Cookies["AuthCookie"];
 
-            System.Console.WriteLine($"token: {auth_token} | decrypted token: {_tokenService.DecryptToken(auth_token)}");
+            // System.Console.WriteLine($"token: {auth_token} | decrypted token: {_tokenService.DecryptToken(auth_token)}");
             
-            
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+                
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login");
+            }
+
             User? email_check = _db.Users.FirstOrDefault(o => o.Email == obj.Email && o.Id != obj.Id);
-                if (email_check != null) {
-                    TempData["error"] = "Provide a unique email";
-                    return View(obj);
-                }
-                User? username_check = _db.Users.FirstOrDefault(o => o.Username == obj.Username && o.Id != obj.Id);
-                if (username_check != null) {
-                    TempData["error"] = "Provide a unique username";
-                    return View(obj);
-                }
+            if (email_check != null) {
+                ModelState.AddModelError(
+                    "",
+                    "Provide a unique email!"
+                );
+                TempData["error"] = "Provide a unique email";
+                return View(obj);
+            }
+            User? username_check = _db.Users.FirstOrDefault(o => o.Username == obj.Username && o.Id != obj.Id);
+            if (username_check != null) {
+                ModelState.AddModelError(
+                    "",
+                    "Provide a unique username!"
+                );
+                TempData["error"] = "Provide a unique username";
+                return View(obj);
+            }
 
-                _db.Users.Update(obj);
-                _db.SaveChanges();
+            _db.Users.Update(obj);
+            _db.SaveChanges();
 
-                TempData["success"] = "Details Updated!";
-                return RedirectToAction("Dashboard");
+            TempData["success"] = "Details Updated!";
+            return RedirectToAction("Dashboard");
         }
+        
+        [HttpGet]
         public IActionResult DeleteUser() {
-            return View(); // this also does not require any view so use something like a redirect for this
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            string email = "", username = "";
+            User? user;
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+                
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login");
+            }
+
+            return View(user); 
+        }
+
+        [HttpPost]
+        public IActionResult DeleteUser(string password) {
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            string email = "", username = "";
+            User? user;
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+                
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login");
+            }
+
+            var password_check = BCryptHelper.CheckPassword(
+                password,
+                user.Password
+            );
+
+            if (!password_check) {
+                ModelState.AddModelError(
+                    "",
+                    "Provide Correct Password!"
+                );
+                TempData["error"] = "Invalid Password!";
+                return View(user);
+            }
+
+            _db.Users.Remove(user);
+            _db.SaveChanges();
+            Response.Cookies.Delete("AuthCookie");
+            TempData["success"] = "Your Account is now Deleted!";
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult ForgotPassword() {
