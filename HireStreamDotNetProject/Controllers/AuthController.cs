@@ -306,10 +306,118 @@ namespace HireStreamDotNetProject.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult ForgotPassword() {
+        [HttpGet]
+        public IActionResult ChangePassword() {
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            string? username;
+            string? email;
+            User? user;
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+                
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login");
+            }
             return View();
         }
 
+        [HttpPost]
+        public IActionResult ChangePassword(string old_password, string new_password, string confirm_password) {
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            string? username;
+            string? email;
+            User? user;
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+                
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            
+            var password_check = BCryptHelper.CheckPassword(
+                old_password,
+                user.Password
+            );
+
+            if (!password_check) {
+                ModelState.AddModelError(
+                    "",
+                    "Incorrect old password"
+                );
+                TempData["error"] = "Incorrect Old Password!";
+                return View();
+            }
+
+            if (new_password != confirm_password) {
+                ModelState.AddModelError(
+                    "",
+                    "new password and confirm password don't match"
+                );
+                TempData["error"] = "new password and confirm password don't match";
+                return View();
+            }
+
+            var salt = BCryptHelper.GenerateSalt(10);
+            var hashed_password = BCryptHelper.HashPassword(
+                new_password,
+                salt
+            );
+
+            user.Password = hashed_password;
+            _db.SaveChanges();
+            TempData["success"] = "Your password is now updated!";
+            return RedirectToAction("Dashboard");
+        }
+
+
+        [HttpGet]
+        public IActionResult ForgotPassword() {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult ForgotPassword(string email) {
+            var email_check = _db.Users.FirstOrDefault(o => o.Email == email);
+            if (email_check == null)
+                return View();
+            
+            return View();
+        }
         public IActionResult CreateProfile() {
             return View();
         }

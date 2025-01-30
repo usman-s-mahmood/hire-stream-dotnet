@@ -18,3 +18,6 @@ virt/
 
 # node_modules
 node_modules/
+
+# secrets
+secrets.json
