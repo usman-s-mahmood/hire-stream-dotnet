@@ -100,7 +100,7 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Signup(string username, string first_name, string last_name, string email, string password, string gender) {
+        public IActionResult Signup(string username, string first_name, string last_name, string email, string password, string gender, string user_role) {
             var auth_token = Request.Cookies["AuthCookie"];
             System.Console.WriteLine(auth_token);
             if (auth_token != null) {
@@ -142,6 +142,7 @@ namespace HireStreamDotNetProject.Controllers
                     LastName = last_name,
                     Email = email,
                     Gender = gender,
+                    UserRole = user_role,
                     Password = hash
                 });
                 _db.SaveChanges();
@@ -471,6 +472,7 @@ namespace HireStreamDotNetProject.Controllers
             ViewBag.LastName = user.LastName;
             ViewBag.Gender = user.Gender;
             ViewBag.ProfilePic = profile_pic;
+            ViewBag.UserRole = user.UserRole;
             ViewBag.IsAuth = true;
 
             return View();
