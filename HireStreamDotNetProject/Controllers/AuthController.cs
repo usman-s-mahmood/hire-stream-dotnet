@@ -74,6 +74,7 @@ namespace HireStreamDotNetProject.Controllers
                     token,
                     options
                 );
+                Response.Cookies.Delete("MyAppCookie");
                 return RedirectToAction("Dashboard");
             }
             else {

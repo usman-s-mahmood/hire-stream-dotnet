@@ -42,6 +42,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register the TokenService as a singleton
 builder.Services.AddSingleton<HireStreamDotNetProject.Utils.TokenService>();
 
+// Register EmailService as a singleton
+builder.Services.AddSingleton<HireStreamDotNetProject.Utils.EmailService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

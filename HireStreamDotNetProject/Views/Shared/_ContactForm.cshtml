@@ -1,4 +1,5 @@
 @* Created Manually! *@
+@model Contact
 <!-- contact section start -->
     <div class="container my-5">
         <div class="row align-items-center contact-section">
@@ -12,23 +13,23 @@
 
             <!-- Right Column: Contact Form -->
             <div class="col-md-6">
-                <form class="needs-validation" novalidate>
+                <form class="needs-validation" method="post" action="/Home/Contact" novalidate>
                     <!-- Name Field -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" placeholder="Enter your name" required />
+                        <input type="text" asp-for="Name" class="form-control" id="name" placeholder="Enter your name" required />
                         <div class="invalid-feedback">Please enter your name.</div>
                     </div>
                     <!-- Email Field -->
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="Enter your email" required />
+                        <input type="email" asp-for="Email" class="form-control" id="email" placeholder="Enter your email" required />
                         <div class="invalid-feedback">Please enter a valid email address.</div>
                     </div>
                     <!-- Message Field -->
                     <div class="mb-3">
                         <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control" id="message" rows="5" placeholder="Enter your message" required></textarea>
+                        <textarea class="form-control" asp-for="Message" id="message" rows="5" placeholder="Enter your message" required></textarea>
                         <div class="invalid-feedback">Please enter your message.</div>
                     </div>
                     <!-- Submit Button -->

@@ -1,9 +1,54 @@
-// created manually!
+using System;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using MimeKit;
 
 namespace HireStreamDotNetProject.Utils {
-    public class EmailConfig {
-        public string? email;
-        public string? password;
+    public class EmailConfig
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string Host { get; set; }
+}
+
+public class EmailService
+{
+    private readonly EmailConfig _emailConfig;
+
+    public EmailService()
+    {
+        // Load credentials from JSON file
+        string json = File.ReadAllText("secrets.json");
+        _emailConfig = JsonSerializer.Deserialize<EmailConfig>(json);
+        System.Console.WriteLine($"email: {_emailConfig.Email} | password: {_emailConfig.Password} | host: {_emailConfig.Host}");
     }
+
+    public async Task SendEmailAsync(string toEmail, string subject, string body)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Your App Name", _emailConfig.Email));
+        message.To.Add(new MailboxAddress("", toEmail));
+        message.Subject = subject;
+
+        message.Body = new TextPart("html") { Text = body };
+
+        using (var client = new SmtpClient())
+        {
+            try
+            {
+                await client.ConnectAsync("smtp.gmail.com", 587, false);
+                await client.AuthenticateAsync(_emailConfig.Email, _emailConfig.Password);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+            }
+        }
+    }
+}
 
 }
