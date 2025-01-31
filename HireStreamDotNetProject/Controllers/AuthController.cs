@@ -512,7 +512,8 @@ namespace HireStreamDotNetProject.Controllers
                             user.Email,
                             user.Username,
                             user.FirstName,
-                            user.LastName
+                            user.LastName,
+                            user.UserRole
                         }
                     });
                 }

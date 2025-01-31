@@ -23,8 +23,10 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult CreatePost() {
             var auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
             if (auth_cookie == null) {
                 TempData["error"] = "Login To Continue!";
                 return RedirectToAction("Login", "Auth");
@@ -97,8 +99,17 @@ namespace HireStreamDotNetProject.Controllers
                 TempData["error"] = "Authentication Failed! Login To Continue!";
                 return RedirectToAction("Login", "Auth");
             }
-            
-            return View();
+
+            _db.JobPosts.Add(new JobPost{
+                Title = obj.Title,
+                Content = obj.Content,
+                JobType = obj.JobType,
+                User = user,
+                Location = obj.Location
+            });
+            _db.SaveChanges();
+            TempData["success"] = "Your post is now published!";
+            return RedirectToAction("Dashboard", "Auth");
         }
     }
 }

@@ -1,0 +1,68 @@
+@{
+    ViewData["Controller"] = "TalentSeeker";
+    ViewData["Action"] = "CreatePost";
+}
+
+@model HireStreamDotNetProject.Models.JobPost
+
+@await Html.PartialAsync("_Header", null, ViewData);
+
+<div class="container shadow rounded mt-5 p-4" style="max-width: 500px; background: #f9f9f9;">
+    <h3 class="text-center mb-4 text-primary">Create Job Post</h3>
+    <div asp-validation-summary="All" class="text-center text-danger"></div> 
+    <form action="" class="form-control p-4 mt-3" method="post" id="jobPostForm">
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control outline-primary" asp-for="Title" placeholder="Enter the Title for job post" minlength="2" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-control outline-primary" asp-for="Location" placeholder="Enter job location e.g. Lahore, Punjab" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Job Type</label>
+            <select class="form-control outline-primary" asp-for="JobType" required>
+                <option value="" disabled selected>Select Job Type</option>
+                <option value="Full-Time">Full-Time</option>
+                <option value="Part-Time">Part-Time</option>
+                <option value="Contract">Contract</option>
+                <option value="Internship">Internship</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Content</label>
+            <div id="editor" style="height: 250px; border: 1px solid #ced4da; border-radius: 5px; padding: 10px; background: #fff;"></div>
+            <input type="hidden" asp-for="Content" id="hiddenContent">
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Post Job</button>
+    </form>
+</div>
+
+<script>
+
+// var quill = new Quill('#editor', {
+//     theme: 'snow',
+//     placeholder: 'Enter job description...',
+//     modules: {
+//         toolbar: [
+//             [{ 'header': [1, 2, false] }],
+//             ['bold', 'italic', 'underline'],
+//             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+//             ['link', 'image'],
+//             ['clean']
+//         ]
+//     }
+// });
+
+var quill = new Quill('#editor', {
+    theme: 'snow'
+});
+quill.on('text-change', function() {
+    document.querySelector('#hiddenContent').value = quill.root.innerHTML;
+});
+
+</script>
