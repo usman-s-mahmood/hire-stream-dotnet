@@ -23,8 +23,6 @@ public class EmailService
         // Load credentials from JSON file
         string json = File.ReadAllText("secrets.json");
         _emailConfig = JsonSerializer.Deserialize<EmailConfig>(json);
-        System.Console.WriteLine($"email: {_emailConfig.Email} | password: {_emailConfig.Password} | host: {_emailConfig.Host}");
-        Console.WriteLine($"Email: {_emailConfig.Email} | Password: {_emailConfig.Password} | {_emailConfig.Host}");
     }
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)

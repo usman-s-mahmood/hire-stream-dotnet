@@ -36,7 +36,6 @@ public class HomeController : Controller
 
     [HttpPost]
     public async Task<IActionResult> Contact(Contact obj) {
-        System.Console.WriteLine($"Values Received From obj: \n{obj.Name} | {obj.Email} | {obj.Message}" );
         bool sent;
         try {
             await _em.SendEmailAsync(
