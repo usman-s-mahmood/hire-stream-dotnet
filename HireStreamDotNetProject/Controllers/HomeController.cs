@@ -40,7 +40,7 @@ public class HomeController : Controller
         bool sent;
         try {
             await _em.SendEmailAsync(
-                "usmanshahid027@outlook.com",
+                "muhammadusman27virgo@yahoo.com",
                 $"Contact Query From HireStream by {obj.Name}",
                 obj.Message
             );

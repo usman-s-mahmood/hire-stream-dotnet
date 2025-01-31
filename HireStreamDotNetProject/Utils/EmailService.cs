@@ -1,3 +1,4 @@
+// created manually! to use this file, make a secrets.json in the base folder of this project and specify the value of 3 keys Email, Password & Host
 using System;
 using System.IO;
 using System.Text.Json;
@@ -23,12 +24,13 @@ public class EmailService
         string json = File.ReadAllText("secrets.json");
         _emailConfig = JsonSerializer.Deserialize<EmailConfig>(json);
         System.Console.WriteLine($"email: {_emailConfig.Email} | password: {_emailConfig.Password} | host: {_emailConfig.Host}");
+        Console.WriteLine($"Email: {_emailConfig.Email} | Password: {_emailConfig.Password} | {_emailConfig.Host}");
     }
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)
     {
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Your App Name", _emailConfig.Email));
+        message.From.Add(new MailboxAddress("Hire Stream DotNet", _emailConfig.Email));
         message.To.Add(new MailboxAddress("", toEmail));
         message.Subject = subject;
 
@@ -38,14 +40,14 @@ public class EmailService
         {
             try
             {
-                await client.ConnectAsync("smtp.gmail.com", 587, false);
+                await client.ConnectAsync(_emailConfig.Host, 587, false);
                 await client.AuthenticateAsync(_emailConfig.Email, _emailConfig.Password);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending email: {ex.Message}");
+                Console.WriteLine($"Error sending email!!\n {ex.Message}");
             }
         }
     }
