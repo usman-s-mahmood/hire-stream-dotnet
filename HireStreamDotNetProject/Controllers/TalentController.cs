@@ -105,7 +105,9 @@ namespace HireStreamDotNetProject.Controllers
                 Content = obj.Content,
                 JobType = obj.JobType,
                 User = user,
-                Location = obj.Location
+                Location = obj.Location,
+                Salary = obj.Salary,
+                Qualification = obj.Qualification
             });
             _db.SaveChanges();
             TempData["success"] = "Your post is now published!";

@@ -15,9 +15,15 @@ namespace HireStreamDotNetProject.Models {
         [ForeignKey("UserId")]
         public User User {get; set;}
         [Required]
-        public string? Location;
+        public string? Location {get; set;}
         [Required]
-        public string? JobType;
+        public string? JobType {get; set;}
+
+        [Required]
+        public string? Qualification {get; set;} = "Bachelor's Degree";
+
+        [Required]
+        public double Salary {get; set;} = 0;
 
     }
 }
