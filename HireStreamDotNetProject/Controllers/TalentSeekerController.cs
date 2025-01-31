@@ -45,13 +45,59 @@ namespace HireStreamDotNetProject.Controllers
                 if (user == null) {
                     Response.Cookies.Delete("AuthCookie");
                     TempData["error"] = "Authentication Failed!";
-                    return RedirectToAction("Login");
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "recruiter") {
+                    TempData["error"] = "You need a recruiter account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
                 }
             } catch {
                 Response.Cookies.Delete("AuthCookie");
                 TempData["error"] = "Authentication Failed! Login To Continue!";
-                return RedirectToAction("Login");
+                return RedirectToAction("Login", "Auth");
+
             }
+            
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreatePost(JobPost obj) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "recruiter") {
+                    TempData["error"] = "You need a recruiter account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            
             return View();
         }
     }
