@@ -7,5 +7,7 @@ namespace HireStreamDotNetProject.Data {
 
         public DbSet<User> Users { get; set; }
         public DbSet<Contact> Contacts { get; set; }
+        public DbSet<JobPost> JobPosts { get; set; }
+        public DbSet<JobApplication> JobApplications { get; set; }
     }
 }
