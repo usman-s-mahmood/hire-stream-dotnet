@@ -102,6 +102,17 @@ namespace HireStreamDotNetProject.Controllers
                 TempData["error"] = "Authentication Failed! Login To Continue!";
                 return RedirectToAction("Login", "Auth");
             }
+            Console.WriteLine($"Value received in category field: {obj.CategoryId}");
+            JobCategory? cat = _db.JobCategories.Find(obj.CategoryId);
+
+            if (cat == null) {
+                ModelState.AddModelError(
+                    "",
+                    "Invalid Job Category!"
+                );
+                TempData["error"] = "Invalid Job Category!";
+                return View(obj);
+            }
 
             _db.JobPosts.Add(new JobPost{
                 Title = obj.Title,
@@ -110,11 +121,13 @@ namespace HireStreamDotNetProject.Controllers
                 User = user,
                 Location = obj.Location,
                 Salary = obj.Salary,
-                Qualification = obj.Qualification
+                Qualification = obj.Qualification,
+                CategoryId = cat.Id
             });
             _db.SaveChanges();
             TempData["success"] = "Your post is now published!";
             return RedirectToAction("Dashboard", "Auth");
         }
+    
     }
 }
