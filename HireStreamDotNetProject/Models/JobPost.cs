@@ -24,6 +24,11 @@ namespace HireStreamDotNetProject.Models {
 
         [Required]
         public double Salary {get; set;} = 0;
+        
+        public int CategoryId {get; set;}
+        [ForeignKey("CategoryId")]
+        public JobCategory JobCategory;
 
+        public bool IsActive {get; set;} = true;
     }
 }
