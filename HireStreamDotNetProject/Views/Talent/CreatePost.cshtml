@@ -37,7 +37,7 @@
             <select class="form-control outline-primary" asp-for="JobCategory" required>
                 <option value="" disabled selected>Select Department</option>
                 @foreach(var i in ViewBag.JCats) {
-                    <option value="@i.Name" disabled selected>@i.Name</option>
+                    <option value="@i.Name">@i.Name</option>
                 }
             </select>
         </div>

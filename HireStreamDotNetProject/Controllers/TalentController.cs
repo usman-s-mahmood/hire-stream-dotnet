@@ -60,7 +60,7 @@ namespace HireStreamDotNetProject.Controllers
                 return RedirectToAction("Login", "Auth");
 
             }
-            var JCats = _db.JobCategories.ToList();
+            var JCats = _db.JobCategories.OrderBy(o => o.Name).ToList();
             ViewBag.JCats = JCats;
             foreach (var i in JCats)
                 Console.WriteLine($"{i.Name}");
