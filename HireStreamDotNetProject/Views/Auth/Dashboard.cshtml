@@ -32,33 +32,42 @@
 
     <!-- Second Row -->
     <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Card 1</h5>
-                    <p class="card-text">Brief information about card 1.</p>
+        @if (ViewBag.CardCount > 0) {
+            @foreach (var i in ViewBag.Cards) {
+                <div class="col-md-4 my-2 py-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@i.Title</h5>
+                            <p class="card-text">@i.JobCategory.Name</p>
+                            <p class="card-text">@i.JobType</p>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <a href="/Talent/EditPost/@i.Id" class="btn btn-sm btn-success">Edit</a>
+                            @if (i.IsActive) {
+                                <a href="/Talent/HidePost/@i.Id" class="btn btn-sm btn-secondary">Hide </a>
+                            }
+                            @if (!i.IsActive) {
+                                <a href="/Talent/UnHidePost/@i.Id" class="btn btn-sm btn-secondary">UnHide </a>
+                            }
+                            <a href="/Talent/DeletePost/@i.Id" class="btn btn-sm btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            }  
+        }
+        @if (ViewBag.CardCount == 0 && ViewBag.Role == "recruiter") {
+            <div class="col-md-12">
+                <p class="fs-4"><strong>Nothing to Show here!</strong> Add your first Job Post</p>
+                <div class="text-center">
+                    <a href="/Talent/CreatePost" class="btn btn-success">Create</a>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Card 2</h5>
-                    <p class="card-text">Brief information about card 2.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Card 3</h5>
-                    <p class="card-text">Brief information about card 3.</p>
-                </div>
-            </div>
-        </div>
+        }
+        
     </div>
 
-    <!-- Third Row -->
+    <!-- Third Row 
     <div class="row mt-4">
         <div class="col-md-4">
             <div class="card">
@@ -84,7 +93,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Navigation Buttons -->
     <div class="text-center mt-4">

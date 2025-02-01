@@ -7,6 +7,7 @@ using HireStreamDotNetProject.Models;
 using DevOne.Security.Cryptography.BCrypt;
 using HireStreamDotNetProject.Utils;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 
 namespace HireStreamDotNetProject.Controllers
 {
@@ -474,6 +475,14 @@ namespace HireStreamDotNetProject.Controllers
             ViewBag.ProfilePic = profile_pic;
             ViewBag.UserRole = user.UserRole;
             ViewBag.IsAuth = true;
+            ViewBag.Role = user.UserRole;
+
+            if (user.UserRole == "recruiter") {
+                var cards = _db.JobPosts.Include(j => j.JobCategory).Where(o => o.User == user).OrderBy(o => o.Id).ToList();
+                int card_count = cards.Count;
+                ViewBag.Cards = cards;
+                ViewBag.CardCount = card_count;
+            }
 
             return View();
         }
