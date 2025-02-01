@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HireStreamDotNetProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250201153431_UpdatedJobCategoriesModel")]
-    partial class UpdatedJobCategoriesModel
+    [Migration("20250201192039_AddedJobCategoryModel")]
+    partial class AddedJobCategoryModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,53 +85,18 @@ namespace HireStreamDotNetProject.Migrations
                     b.ToTable("JobApplications");
                 });
 
-            modelBuilder.Entity("HireStreamDotNetProject.Models.JobCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("AddedOn")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JobCategories");
-                });
-
             modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("JobType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("PostDate")
                         .HasColumnType("TEXT");
-
-                    b.Property<string>("Qualification")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<double>("Salary")
-                        .HasColumnType("REAL");
 
                     b.Property<string>("Title")
                         .IsRequired()

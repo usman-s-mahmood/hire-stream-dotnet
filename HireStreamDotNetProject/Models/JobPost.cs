@@ -27,7 +27,7 @@ namespace HireStreamDotNetProject.Models {
         
         public int CategoryId {get; set;}
         [ForeignKey("CategoryId")]
-        public JobCategory JobCategory;
+        public JobCategory JobCategory {get; set;}
 
         public bool IsActive {get; set;} = true;
     }

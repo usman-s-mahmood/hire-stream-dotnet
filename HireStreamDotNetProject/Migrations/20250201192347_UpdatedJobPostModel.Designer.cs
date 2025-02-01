@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HireStreamDotNetProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250131214506_UpdatedJobPostModel")]
+    [Migration("20250201192347_UpdatedJobPostModel")]
     partial class UpdatedJobPostModel
     {
         /// <inheritdoc />
@@ -85,15 +85,44 @@ namespace HireStreamDotNetProject.Migrations
                     b.ToTable("JobApplications");
                 });
 
+            modelBuilder.Entity("HireStreamDotNetProject.Models.JobCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("AddedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("JobCategory");
+                });
+
             modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("JobType")
                         .IsRequired()
@@ -122,6 +151,8 @@ namespace HireStreamDotNetProject.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
 
@@ -207,13 +238,32 @@ namespace HireStreamDotNetProject.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
+            modelBuilder.Entity("HireStreamDotNetProject.Models.JobCategory", b =>
                 {
                     b.HasOne("HireStreamDotNetProject.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
+                {
+                    b.HasOne("HireStreamDotNetProject.Models.JobCategory", "JobCategory")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HireStreamDotNetProject.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobCategory");
 
                     b.Navigation("User");
                 });

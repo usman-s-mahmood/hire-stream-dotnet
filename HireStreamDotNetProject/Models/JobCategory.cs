@@ -7,9 +7,9 @@ namespace HireStreamDotNetProject.Models {
         public int Id {get; set;}
         [Required]
         public string? Name {get; set;}
-        public int UserId;
+        public int UserId {get; set;}
         [ForeignKey("UserId")]
-        public User User;
+        public User User {get; set;}
         public DateTime AddedOn {get; set;} = DateTime.Now;
     }
 }

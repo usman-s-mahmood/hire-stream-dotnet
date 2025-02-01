@@ -95,7 +95,12 @@ namespace HireStreamDotNetProject.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("JobCategories");
                 });
@@ -143,6 +148,8 @@ namespace HireStreamDotNetProject.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
 
@@ -228,13 +235,32 @@ namespace HireStreamDotNetProject.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
+            modelBuilder.Entity("HireStreamDotNetProject.Models.JobCategory", b =>
                 {
                     b.HasOne("HireStreamDotNetProject.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
+                {
+                    b.HasOne("HireStreamDotNetProject.Models.JobCategory", "JobCategory")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HireStreamDotNetProject.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobCategory");
 
                     b.Navigation("User");
                 });

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HireStreamDotNetProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250201143416_AddedNewModelForJobCategoriesAndTweakedJobPostModel")]
-    partial class AddedNewModelForJobCategoriesAndTweakedJobPostModel
+    [Migration("20250201193232_StillFixingMyStupidity")]
+    partial class StillFixingMyStupidity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,7 +94,16 @@ namespace HireStreamDotNetProject.Migrations
                     b.Property<DateTime>("AddedOn")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("JobCategories");
                 });
@@ -142,6 +151,8 @@ namespace HireStreamDotNetProject.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("UserId");
 
@@ -227,13 +238,32 @@ namespace HireStreamDotNetProject.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
+            modelBuilder.Entity("HireStreamDotNetProject.Models.JobCategory", b =>
                 {
                     b.HasOne("HireStreamDotNetProject.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HireStreamDotNetProject.Models.JobPost", b =>
+                {
+                    b.HasOne("HireStreamDotNetProject.Models.JobCategory", "JobCategory")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HireStreamDotNetProject.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobCategory");
 
                     b.Navigation("User");
                 });

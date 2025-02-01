@@ -5,7 +5,7 @@
 namespace HireStreamDotNetProject.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdatedJobCategoriesModel : Migration
+    public partial class AddedJobCategoryModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,6 +1,6 @@
 @{
     ViewData["Controller"] = "TalentSeeker";
-    ViewData["Action"] = "CreatePost";
+    ViewData["Action"] = "EditPost";
 }
 
 @model HireStreamDotNetProject.Models.JobPost
@@ -8,9 +8,11 @@
 @await Html.PartialAsync("_Header", null, ViewData);
 
 <div class="container shadow rounded mt-5 p-4" style="max-width: 500px; background: #f9f9f9;">
-    <h3 class="text-center mb-4 text-primary">Create Job Post</h3>
+    <h3 class="text-center mb-4 text-primary">Edit Job Post</h3>
     <div asp-validation-summary="All" class="text-center text-danger"></div> 
     <form action="" class="form-control p-4 mt-3" method="post" id="jobPostForm">
+        <input type="hidden" aps-for="Id">
+        <input type="hidden" aps-for="User">
         <div class="mb-3">
             <label class="form-label">Title</label>
             <input type="text" class="form-control outline-primary" asp-for="Title" placeholder="Enter the Title for job post" minlength="2" required>
@@ -72,12 +74,15 @@
 </div>
 
 <script>
+    var quill = new Quill('#editor', {
+        theme: 'snow'
+    });
 
-var quill = new Quill('#editor', {
-    theme: 'snow'
-});
-quill.on('text-change', function() {
-    document.querySelector('#hiddenContent').value = quill.root.innerHTML;
-});
+    
+    var hiddenContent = document.querySelector('#hiddenContent').value;
+    quill.root.innerHTML = hiddenContent; 
 
+    quill.on('text-change', function() {
+        document.querySelector('#hiddenContent').value = quill.root.innerHTML;
+    });
 </script>

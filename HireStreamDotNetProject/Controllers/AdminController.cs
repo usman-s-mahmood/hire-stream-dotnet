@@ -104,7 +104,7 @@ namespace HireStreamDotNetProject.Controllers
                 return RedirectToAction("Login", "Auth");
             }
             System.Console.WriteLine($"Name Received: {obj.Name}");
-            JobCategory? check = _db.JobCategories.FirstOrDefault(o => o.Name == obj.Name);
+            JobCategory? check = _db.JobCategories.FirstOrDefault(o => o.Name == obj.Name.ToLower());
             if (check != null) {
                 ModelState.AddModelError(
                     "Name",
