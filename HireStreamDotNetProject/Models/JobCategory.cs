@@ -5,7 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HireStreamDotNetProject.Models {
     public class JobCategory {
         public int Id {get; set;}
-        public string? Name;
+        [Required]
+        public string? Name {get; set;}
         public int UserId;
         [ForeignKey("UserId")]
         public User User;

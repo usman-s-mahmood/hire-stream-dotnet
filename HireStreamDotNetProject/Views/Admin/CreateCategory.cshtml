@@ -1,0 +1,19 @@
+@{
+    ViewData["Controller"] = "Admin";
+    ViewData["Action"] = "CreateCategory";
+}
+
+@await Html.PartialAsync("_Header", null, ViewData);
+
+@model JobCategory
+
+<div class="container">
+    <form class="form-control" action="" method="post">
+        <div asp-validation-summary="All" class="text-center text-danger"></div> 
+        <label for="">Category Name</label>
+        <input type="text" class="form-control" asp-for="Name" placeholder="Enter a unique Job Category!" required>
+        <span class="text-danger" asp-validation-for="Name"></span>
+        <hr>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</div>
