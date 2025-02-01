@@ -4,6 +4,7 @@ try {
 } catch(error) {
     console.error(`year tag failure!`);
 }
+try {
 
 (function () {
     'use strict';
@@ -43,3 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const logos = slider.innerHTML;
     slider.innerHTML += logos; // Duplicate logos for seamless animation
 });
+
+} catch {
+    
+}

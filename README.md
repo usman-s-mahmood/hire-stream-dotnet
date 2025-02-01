@@ -16,6 +16,14 @@ Submitted to: Prof. Asad Kamal
 
 ## Technical Details
 
-#### Frontend
+the frontend of this project is designed in bootstrap 5
 
-the frontend of this project is designed in bootstrap
+backend is Developed in ASP.NET Core MVC with Dotnet Version 8
+
+for testing purposes .sqlite3 database is used
+
+Core Packages being used in this project
+
+BCrypt for password hashing
+
+DataProtectionAPI for secure Token Generation
