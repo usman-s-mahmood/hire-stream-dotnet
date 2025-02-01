@@ -31,42 +31,51 @@
     </div>
 
     <!-- Second Row -->
-    <div class="row mt-4">
-        @if (ViewBag.CardCount > 0) {
-            @foreach (var i in ViewBag.Cards) {
-                <div class="col-md-4 my-2 py-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">@i.Title</h5>
-                            <p class="card-text">@i.JobCategory.Name</p>
-                            <p class="card-text">@i.JobType</p>
-                        </div>
-                        <hr>
-                        <div class="text-center">
-                            <a href="/Talent/EditPost/@i.Id" class="btn btn-sm btn-success">Edit</a>
-                            @if (i.IsActive) {
-                                <a href="/Talent/HidePost/@i.Id" class="btn btn-sm btn-secondary">Hide </a>
-                            }
-                            @if (!i.IsActive) {
-                                <a href="/Talent/UnHidePost/@i.Id" class="btn btn-sm btn-secondary">UnHide </a>
-                            }
-                            <a href="/Talent/DeletePost/@i.Id" class="btn btn-sm btn-danger">Delete</a>
-                        </div>
+ 
+<!-- Job Posts Section -->
+<div class="row mt-4" id="DisplayCards">
+    @if (ViewBag.CardCount > 0 && ViewBag.Role == "recruiter") {
+        @foreach (var i in ViewBag.Cards) {
+            <div class="col-md-4 my-2 py-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@i.Title</h5>
+                        <p class="card-text">@i.JobCategory.Name</p>
+                        <p class="card-text">@i.JobType</p>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <a href="/Talent/EditPost/@i.Id" class="btn btn-sm btn-success">Edit</a>
+                        @if (i.IsActive) {
+                            <a href="/Talent/HidePost/@i.Id" class="btn btn-sm btn-secondary">Hide </a>
+                        }
+                        @if (!i.IsActive) {
+                            <a href="/Talent/UnHidePost/@i.Id" class="btn btn-sm btn-secondary">UnHide </a>
+                        }
+                        <a href="/Talent/DeletePost/@i.Id" class="btn btn-sm btn-danger">Delete</a>
                     </div>
                 </div>
-            }  
-        }
-        @if (ViewBag.CardCount == 0 && ViewBag.Role == "recruiter") {
-            <div class="col-md-12">
-                <p class="fs-4"><strong>Nothing to Show here!</strong> Add your first Job Post</p>
-                <div class="text-center">
-                    <a href="/Talent/CreatePost" class="btn btn-success">Create</a>
-                </div>
             </div>
-        }
-        
-    </div>
+        }  
+    }
+</div>
 
+<!-- Pagination Controls -->
+@if (ViewBag.TotalPages > 1) {
+    <div class="text-center mt-4">
+        @if (ViewBag.CurrentPage > 1) {
+        @* <a href="@Url.Action("Dashboard", new { page = ViewBag.CurrentPage - 1 })#DisplayCards" class="btn btn-danger">Previous</a> *@
+        <a href="/Auth/Dashboard?page=@(ViewBag.CurrentPage - 1)#DisplayCards" class="btn btn-danger">Previous</a>
+
+    }
+    Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+    @if (ViewBag.CurrentPage < ViewBag.TotalPages) {
+        @* <a href="@Url.Action("Dashboard", new { page = ViewBag.CurrentPage + 1 })#DisplayCards" class="btn btn-danger">Next</a> *@
+        <a href="/Auth/Dashboard?page=@(ViewBag.CurrentPage + 1)#DisplayCards" class="btn btn-danger">Next</a>
+    }
+
+    </div>
+}
     <!-- Third Row 
     <div class="row mt-4">
         <div class="col-md-4">
@@ -95,9 +104,18 @@
         </div>
     </div> -->
 
-    <!-- Navigation Buttons -->
-    <div class="text-center mt-4">
-        <button class="btn btn-secondary">Previous</button>
-        <button class="btn btn-secondary">Next</button>
-    </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.hash === "#DisplayCards") {
+            const element = document.getElementById("DisplayCards");
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 3000); // Delay ensures the page is fully loaded before scrolling
+            }
+        }
+    });
+</script>
+

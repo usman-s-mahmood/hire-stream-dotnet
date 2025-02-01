@@ -430,7 +430,7 @@ namespace HireStreamDotNetProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult Dashboard() {
+        public IActionResult Dashboard(int page=1) {
             string? auth_token = Request.Cookies["AuthCookie"];
             System.Console.WriteLine(auth_token);
             if (auth_token == null) {
@@ -478,12 +478,20 @@ namespace HireStreamDotNetProject.Controllers
             ViewBag.Role = user.UserRole;
 
             if (user.UserRole == "recruiter") {
-                var cards = _db.JobPosts.Include(j => j.JobCategory).Where(o => o.User == user).OrderBy(o => o.Id).ToList();
-                int card_count = cards.Count;
-                ViewBag.Cards = cards;
-                ViewBag.CardCount = card_count;
-            }
+                int pageSize = 3;  // Show only 3 records per page
+                var jobPosts = _db.JobPosts
+                                .Include(j => j.JobCategory)
+                                .Where(o => o.User == user)
+                                .OrderBy(o => o.Id);
 
+                int totalJobs = jobPosts.Count();
+                var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                ViewBag.Cards = paginatedJobs;
+                ViewBag.CardCount = totalJobs;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = (int)Math.Ceiling(totalJobs / (double)pageSize);
+            }
             return View();
         }
 
