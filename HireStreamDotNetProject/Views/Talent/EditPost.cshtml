@@ -1,5 +1,5 @@
 @{
-    ViewData["Controller"] = "TalentSeeker";
+    ViewData["Controller"] = "Talent";
     ViewData["Action"] = "EditPost";
 }
 
@@ -12,7 +12,6 @@
     <div asp-validation-summary="All" class="text-center text-danger"></div> 
     <form action="" class="form-control p-4 mt-3" method="post" id="jobPostForm">
         <input type="hidden" aps-for="Id">
-        <input type="hidden" aps-for="User">
         <div class="mb-3">
             <label class="form-label">Title</label>
             <input type="text" class="form-control outline-primary" asp-for="Title" placeholder="Enter the Title for job post" minlength="2" required>
