@@ -1,6 +1,6 @@
 @{
     ViewData["Controller"] = "Talent";
-    ViewData["Action"] = "DeletePost";
+    ViewData["Action"] = "UnHidePost";
 }
 
 @model HireStreamDotNetProject.Models.JobPost
@@ -8,7 +8,7 @@
 @await Html.PartialAsync("_Header", null, ViewData);
 
 <div class="container shadow rounded mt-5 p-4" style="max-width: 500px; background: #f9f9f9;">
-    <h3 class="text-center mb-4 text-primary">Delete Job Post</h3>
+    <h3 class="text-center mb-4 text-primary">Active Job Post</h3>
     <div asp-validation-summary="All" class="text-center text-danger"></div> 
     <form action="" class="form-control p-4 mt-3" method="post" id="jobPostForm">
         <input type="hidden" aps-for="Id" name="post_id">
@@ -16,12 +16,7 @@
             <label class="form-label">Password</label>
             <input type="password" class="form-control outline-primary" placeholder="Enter your Password to continue" minlength="8" required name="password" >
         </div>
-        <div class="text-center">
-            <hr>
-                <p class="fs-6 text-danger"><strong>Post Once Deleted Can't be recovered</strong></p>
-            <hr>
-        </div>
-        <button type="submit" class="btn btn-danger w-100">Delete Post</button>
+        <button type="submit" class="btn btn-success w-100">Activate Post</button>
     </form>
 </div>
 

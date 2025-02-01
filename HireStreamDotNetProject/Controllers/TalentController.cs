@@ -394,7 +394,153 @@ namespace HireStreamDotNetProject.Controllers
                 "Auth"
             );
         }
-    
+
+
+        [HttpGet]
+        public IActionResult UnhidePost(int id) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "recruiter") {
+                    TempData["error"] = "You need a recruiter account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            JobPost? obj = _db.JobPosts.Find(id);
+            if (obj == null) {
+                TempData["error"] = "Post Not Found!";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            if (obj.UserId != user.Id && !user.IsAdmin) {
+                TempData["error"] = "Invalid Operation! Request Failed";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            if (obj.IsActive) {
+                TempData["error"] = "Post Is Already Active!";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            
+            return View(obj);
+        }
+
+        
+        [HttpPost]
+        public IActionResult UnhidePost(string password, int Id) {
+            System.Console.WriteLine($"Post Id forwarded to function is: {Id}");
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "recruiter") {
+                    TempData["error"] = "You need a recruiter account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            JobPost? obj = _db.JobPosts.Find(Id);
+            if (obj == null) {
+                TempData["error"] = "Post Not Found!";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            if (obj.UserId != user.Id && !user.IsAdmin) {
+                TempData["error"] = "Invalid Operation! Request Failed";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            if (obj.IsActive) {
+                TempData["error"] = "Post Is Already Active!";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            var password_check = BCryptHelper.CheckPassword(
+                password,
+                user.Password
+            );
+            if (!password_check) {
+                ModelState.AddModelError(
+                    "",
+                    "Invalid Password, Try Again!"
+                );
+                TempData["error"] = "Incorrect Password! Try Again";
+                return View(obj);
+            }
+            obj.IsActive = true;
+            _db.JobPosts.Update(obj);
+            _db.SaveChanges();
+            TempData["success"] = "Your Post is now Active";
+            return RedirectToAction(
+                "Dashboard",
+                "Auth"
+            );
+        }
+
+
+
+
         [HttpGet]
         public IActionResult DeletePost(int id) {
             var auth_cookie = Request.Cookies["AuthCookie"];
