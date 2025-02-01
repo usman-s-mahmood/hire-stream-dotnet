@@ -142,7 +142,7 @@ namespace HireStreamDotNetProject.Controllers
                     LastName = last_name,
                     Email = email,
                     Gender = gender,
-                    UserRole = user_role,
+                    UserRole = user_role.ToLower(),
                     Password = hash
                 });
                 _db.SaveChanges();

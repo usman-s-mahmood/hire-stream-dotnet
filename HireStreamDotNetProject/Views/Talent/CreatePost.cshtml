@@ -33,6 +33,16 @@
         </div>
 
         <div class="mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-control outline-primary" asp-for="JobCategory" required>
+                <option value="" disabled selected>Select Department</option>
+                @foreach(var i in ViewBag.JCats) {
+                    <option value="@i.Name" disabled selected>@i.Name</option>
+                }
+            </select>
+        </div>
+
+    <div class="mb-3">
     <label class="form-label">Qualification</label>
         <select class="form-control outline-primary" asp-for="Qualification" required>
             <option value="Bachelor's Degree">Bachelor's Degree</option>

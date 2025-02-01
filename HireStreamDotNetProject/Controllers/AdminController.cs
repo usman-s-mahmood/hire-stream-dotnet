@@ -24,8 +24,8 @@ namespace HireStreamDotNetProject.Controllers
         [HttpGet]
         public IActionResult CreateCategory() {
             var auth_cookie = Request.Cookies["AuthCookie"];
-            Console.WriteLine($"value of auth token: {auth_cookie}");;;
-            if (auth_cookie == null) {
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
                 TempData["error"] = "Login To Continue!";
                 return RedirectToAction("Login", "Auth");
             }
@@ -66,9 +66,9 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpPost]
         public IActionResult CreateCategory(JobCategory obj) {
-            var auth_cookie = Request.Cookies["AuthCookie"];
+            string? auth_cookie = Request.Cookies["AuthCookie"];
             Console.WriteLine($"value of auth token: {auth_cookie}");
-            if (auth_cookie == null) {
+            if (auth_cookie == "") {
                 TempData["error"] = "Login To Continue!";
                 return RedirectToAction("Login", "Auth");
             }

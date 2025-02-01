@@ -60,7 +60,10 @@ namespace HireStreamDotNetProject.Controllers
                 return RedirectToAction("Login", "Auth");
 
             }
-            
+            var JCats = _db.JobCategories.ToList();
+            ViewBag.JCats = JCats;
+            foreach (var i in JCats)
+                Console.WriteLine($"{i.Name}");
             return View();
         }
 
