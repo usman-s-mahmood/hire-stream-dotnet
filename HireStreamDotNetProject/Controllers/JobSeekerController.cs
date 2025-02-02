@@ -107,5 +107,39 @@ namespace HireStreamDotNetProject.Controllers
                 .ToList();
             return View();
         }
+
+        [HttpGet]
+        public IActionResult Search(string query, int page = 1) {
+            int pageSize = 3;
+            var jobPosts = _db.JobPosts
+                .Include(j => j.JobCategory)
+                .Where(o => 
+                    EF.Functions.Like(o.Title, '%' + query + '%') ||
+                    EF.Functions.Like(o.Content, '%' + query + '%')
+                )
+                .OrderByDescending(o => o.Id)
+                .Distinct();
+            int totalJobs = jobPosts.Count();
+            var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            if (page > (int) Math.Ceiling(totalJobs/(double)pageSize)) {
+                TempData["error"] = "Record Not Found!";
+                return RedirectToAction("FindJobs");
+            }
+            ViewBag.Cards = paginatedJobs;
+            ViewBag.CardCount = totalJobs;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int) Math.Ceiling(totalJobs/(double)pageSize);
+            ViewBag.Query = query;
+            ViewBag.RecentPosts = _db.JobPosts
+                .OrderBy(o => o.Id)
+                .Reverse()
+                .Take(3);
+            ViewBag.Categories = _db.JobCategories
+                .OrderBy(o => o.Id)
+                .Reverse()
+                .ToList();
+            return View();
+        }
+    
     }
 }
