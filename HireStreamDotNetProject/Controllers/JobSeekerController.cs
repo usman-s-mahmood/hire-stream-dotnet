@@ -45,6 +45,10 @@ namespace HireStreamDotNetProject.Controllers
                 .OrderBy(o => o.Id)
                 .Reverse()
                 .Take(3);
+            ViewBag.Categories = _db.JobCategories
+                .OrderBy(o => o.Id)
+                .Reverse()
+                .ToList();
             return View();
         }
         
@@ -62,6 +66,10 @@ namespace HireStreamDotNetProject.Controllers
                 .Reverse()
                 .Take(3);
             ViewBag.Post = job;
+            ViewBag.Categories = _db.JobCategories
+                .OrderBy(o => o.Id)
+                .Reverse()
+                .ToList();
             return View(job);
         }
     }
