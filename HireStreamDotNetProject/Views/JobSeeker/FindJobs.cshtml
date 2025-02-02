@@ -1,0 +1,80 @@
+@{
+    ViewData["Controller"] = "JobSeeker";
+    ViewData["Action"] = "FindJobs";
+}
+<div class="container-fluid" id="DisplayCards">
+</div>
+@await Html.PartialAsync("_Header", null, ViewData)
+
+<div class="container-fluid">
+
+    <div class="row p-3 border-dark">
+        <div class="col-md-8" >
+            @foreach (var i in ViewBag.Cards) {
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@i.Title</h5>
+                        <p class="card-text">@i.JobCategory.Name</p>
+                        <p class="card-text">@i.JobType</p>
+                    </div>
+                    <hr>
+                    <div class="text-center p-3">
+                        <a href="/Talent/EditPost/@i.Id" class="btn btn-sm btn-success">Edit</a>
+                        @if (i.IsActive) {
+                            <a href="/Talent/HidePost/@i.Id" class="btn btn-sm btn-secondary">Hide </a>
+                        }
+                        @if (!i.IsActive) {
+                            <a href="/Talent/UnHidePost/@i.Id" class="btn btn-sm btn-secondary">UnHide </a>
+                        }
+                        <a href="/Talent/DeletePost/@i.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </div>
+                <hr>
+            }
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                    <button class="btn btn-success" type="submit">Search</button>
+                </form>
+            </div>
+            <hr>
+            <div class="row">
+                <p class="fs-4 text-center"><strong>Recent Job Posts</strong></p>
+                @foreach (var i in ViewBag.RecentPosts) {
+                    <a href="/JobSeeker/ViewPost/@i.Id" class="nav-link">
+                    <div class="card my-1">
+                        <div class="card-body text-center">
+                            <p class="fs-5 card-title">@i.Title</p>
+                        </div>
+                    </div>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="text-center">
+            @if (ViewBag.CurrentPage > 1) {
+                <a href="/JobSeeker/FindJobs?page=@(ViewBag.CurrentPage - 1)#DisplayCards" class="btn btn-danger">Previous</a>
+            }
+            Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages) {
+                <a href="/JobSeeker/FindJobs?page=@(ViewBag.CurrentPage + 1)#DisplayCards" class="btn btn-danger">Next</a>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.hash === "#DisplayCards") {
+            const element = document.getElementById("DisplayCards");
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 300); // Delay ensures the page is fully loaded before scrolling
+            }
+        }
+    });
+</script>

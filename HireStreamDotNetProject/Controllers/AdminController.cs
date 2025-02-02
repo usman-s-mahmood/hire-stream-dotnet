@@ -10,8 +10,8 @@ namespace HireStreamDotNetProject.Controllers
 {
     public class AdminController : Controller
     {
-        ApplicationDbContext _db;
-        TokenService _tokenService;
+        private readonly ApplicationDbContext _db;
+        private readonly TokenService _tokenService;
         public AdminController(ApplicationDbContext db, TokenService tk) {
             _db = db;
             _tokenService = tk;

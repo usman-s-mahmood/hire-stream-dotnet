@@ -51,7 +51,7 @@
                         
                     </li>
                     <li class="nav-item" id="service-btn">
-
+                        <a class="nav-link " href="/Talent/FindJobs">Find a Job</a>
                     </li>
                     <!-- <li class="nav-item">
                 <a class="nav-link disabled" aria-disabled="true">Disabled</a>
@@ -140,7 +140,7 @@
         let authCookie = getCookie("AuthCookie");
         if (authCookie == null) {
             document.getElementById("register").innerHTML = `<a class="nav-link" href="/Auth/Signup">Sign up</a>`;
-            document.getElementById('dashboard').innerHTML = '';
+            @* document.getElementById('dashboard').innerHTML = ''; *@
             document.getElementById('login').innerHTML = `<a class="nav-link" href="/Auth/Login">Login</a>`;
             document.getElementById('user-ops').innerHTML = ``;
             
@@ -166,12 +166,15 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-        fetch("/Auth/VerifyToken") // Replace with your actual API endpoint
+        fetch("/Auth/VerifyToken")
             .then(response => response.json())
             .then(data => {
                 if (data.isAuthenticated && data.user.userRole === "recruiter") {
                     let postJobLink = `<a class="nav-link " href="/Talent/CreatePost">Post a Job</a>`;
                     document.getElementById("service-btn").innerHTML = postJobLink;
+                }
+                else {
+                    let postJobLink = `<a class="nav-link " href="/Talent/FindJobs">Find a Job</a>`;
                 }
             })
             .catch(error => console.error("Error fetching user data:", error));
