@@ -2,8 +2,7 @@
     ViewData["Controller"] = "JobSeeker";
     ViewData["Action"] = "FindJobs";
 }
-<div class="container-fluid" id="DisplayCards">
-</div>
+<input type="hidden" id="DisplayCards">
 @await Html.PartialAsync("_Header", null, ViewData)
 
 <div class="container-fluid">
@@ -48,7 +47,7 @@
             <div class="row">
                 <p class="fs-4 text-center"><strong>Job Categories</strong></p>
                 @foreach (var i in ViewBag.Categories) {
-                    <a href="/JobSeeker/Category/@i.Name" class="nav-link">
+                    <a href="/JobSeeker/Category?Name=@i.Name" class="nav-link">
                     <div class="col-md-12 border my-1">
                         <div class="card-body text-center">
                             <p class="fs-5 card-title">@i.Name</p>

@@ -20,7 +20,7 @@ namespace HireStreamDotNetProject.Controllers
         // GET: /JobSeeker/
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("FindJobs");
         }
 
         [HttpGet]
@@ -71,6 +71,41 @@ namespace HireStreamDotNetProject.Controllers
                 .Reverse()
                 .ToList();
             return View(job);
+        }
+
+        [HttpGet]
+        public IActionResult Category(string Name, int page = 1) {
+            int pageSize = 3;
+            var jobPosts = _db.JobPosts
+                .Include(j => j.JobCategory)
+                .Where(o => o.IsActive == true && o.JobCategory.Name == Name.ToLower())
+                .OrderBy(o => o.Id)
+                .Reverse();
+            System.Console.WriteLine($"Category Received: {Name} | Category Status: {_db.JobCategories.FirstOrDefault(o => o.Name == Name.ToLower()) == null}");
+            // if (_db.JobCategories.FirstOrDefault(o => o.Name == Name.ToLower()) == null) {
+            //     TempData["error"] = "No Records Found!";
+            //     return RedirectToAction("FindJobs");
+            // }
+            int totalJobs = jobPosts.Count();
+            var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            if (page > (int) Math.Ceiling(totalJobs/(double)pageSize) && totalJobs != 0) {
+                TempData["error"] = "Record Not Found! Invalid Request";
+                return RedirectToAction("FindJobs");
+            }
+            ViewBag.Category = Name;
+            ViewBag.Cards = paginatedJobs;
+            ViewBag.CardCount = totalJobs;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int) Math.Ceiling(totalJobs/(double)pageSize);
+            ViewBag.RecentPosts = _db.JobPosts
+                .OrderBy(o => o.Id)
+                .Reverse()
+                .Take(3);
+            ViewBag.Categories = _db.JobCategories
+                .OrderBy(o => o.Id)
+                .Reverse()
+                .ToList();
+            return View();
         }
     }
 }
