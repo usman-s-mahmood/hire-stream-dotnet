@@ -47,5 +47,22 @@ namespace HireStreamDotNetProject.Controllers
                 .Take(3);
             return View();
         }
+        
+        [HttpGet]
+        public IActionResult ViewPost(int id) {
+            var job = _db.JobPosts
+                .Include(j => j.JobCategory)
+                .FirstOrDefault(o => o.Id == id && o.IsActive == true);
+            if (job == null) {
+                TempData["error"] = "Record Not Found";
+                return RedirectToAction("FindJobs");
+            }
+            ViewBag.RecentPosts = _db.JobPosts
+                .OrderBy(o => o.Id)
+                .Reverse()
+                .Take(3);
+            ViewBag.Post = job;
+            return View(job);
+        }
     }
 }
