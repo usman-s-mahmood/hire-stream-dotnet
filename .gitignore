@@ -28,3 +28,10 @@ secrets.json
 
 # Compressed files
 *.zip
+
+# vim temps
+*.*~
+*.SWP
+
+# Build folder
+publish/
