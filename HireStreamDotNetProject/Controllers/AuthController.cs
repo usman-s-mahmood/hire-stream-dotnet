@@ -457,13 +457,20 @@ namespace HireStreamDotNetProject.Controllers
         }
         
         [HttpGet]
-        public IActionResult ResetPassword(string tk) {
+        public IActionResult ResetPassword(string? tk) {
             string? auth_token = Request.Cookies["AuthCookie"];
             if (auth_token != null) {
-                TempData["error"] = "Invalid Request!";
+                TempData["error"] = "Invalid Request! You are already logged in";
                 return RedirectToAction("Dashboard");
             }
-            var record = _db.ResetPasswords.FirstOrDefault(o => o.Token == new Guid(tk));
+            if (tk == null) {
+                TempData["error"] = "Invaild Operation! You can't perform this task";
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
+            var record = _db.ResetPasswords.FirstOrDefault(o => o.Token == new Guid(tk) && !o.IsUsed);
             if (record == null) {
                 TempData["error"] = "Invalid Operation!";
                 return RedirectToAction(
@@ -481,30 +488,57 @@ namespace HireStreamDotNetProject.Controllers
                 );
             }
 
-            var user = _db.Users.Find(record.User.Id);
             return View();
         }
 
         [HttpPost]
         public IActionResult ResetPassword(string tk, string password) {
+            if (string.IsNullOrEmpty(tk)) {
+                TempData["error"] = "Token is missing!";
+                return RedirectToAction("Index", "Home");
+            }
             System.Console.WriteLine($"Values Received: {tk} | {password}");
             string? auth_token = Request.Cookies["AuthCookie"];
             if (auth_token != null) {
-                TempData["error"] = "Invalid Request!";
+                TempData["error"] = "Invalid Request! You are already logged in";
+                // System.Console.WriteLine("This Mf was executed Line 494");
                 return RedirectToAction("Dashboard");
             }
-            var record = _db.ResetPasswords.FirstOrDefault(o => o.Token == new Guid(tk));
+            var record = _db.ResetPasswords.FirstOrDefault(o => o.Token == new Guid(tk) && !o.IsUsed);
+            if (record == null) {
+                TempData["error"] = "Invalid Operation! Request Failed";
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
             if (record.Expiration <= DateTime.UtcNow) {
                 System.Console.WriteLine($"Record Expired! Delete it in this block");
-                TempData["error"] = "Request Failed!";
+                TempData["error"] = "Request Timed Out! Try Again";
                 return RedirectToAction(
                     "Index",
                     "Home"
                 );
             }
 
-            var user = _db.Users.Find(record.User.Id);
-            return View();
+            var user = _db.Users.FirstOrDefault(o => o.Id == record.UserId);
+            record.IsUsed = true;
+            _db.SaveChanges();
+            if (user == null) {
+                TempData["error"] = "Invalid Request! Processing Failed";
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
+            var password_hash = BCryptHelper.HashPassword(
+                password,
+                BCryptHelper.GenerateSalt(10)
+            );
+            user.Password = password_hash;
+            _db.SaveChanges();
+            TempData["success"] = "Password Changed Successfully!";
+            return RedirectToAction("Login");
         }
         public IActionResult CreateProfile() {
             return View();
