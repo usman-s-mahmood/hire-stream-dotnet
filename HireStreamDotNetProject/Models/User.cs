@@ -23,8 +23,8 @@ namespace HireStreamDotNetProject.Models {
         public bool IsAdmin {get; set;} = false;
         public DateTime RegisterDate {get; set;} = DateTime.Now;
         public string ProfilePic {get; set;} = "";
-        public string AboutUser {get; set;} = "";
-        public string SocialLink {get; set;} = "";
-        public string UserRole {get; set;} = "Applicant"; // Either Recruiter or Applicant
+        public string? AboutUser {get; set;} = "";
+        public string? SocialLink {get; set;} = "";
+        public string UserRole {get; set;} = "applicant"; // Either Recruiter or Applicant
     }
 }

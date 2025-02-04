@@ -1,0 +1,39 @@
+@{
+    ViewData["Controller"] = "JobSeeker";
+    ViewData["Action"] = "ApplyNow";
+}
+
+@await Html.PartialAsync("_Header", null, ViewData)
+@model JobApplication
+
+<div class="container shadow rounded mt-5 p-4">
+    <h2 class="text-center">Apply Now: @ViewBag.JobPost.Title</h2>
+    <p class="text-center">Salary: <strong>@ViewBag.JobPost.Salary</strong></p>
+    <p class="text-center">Department: <strong>@ViewBag.JobPost.JobCategory.Name</strong></p>
+    <div class="text-center">
+        <a href="/JobSeeker/ViewPost/@ViewBag.JobPost.Id" class="btn btn-success">Details</a>
+    </div>
+    <form action="" method="post" enctype="multipart/form-data" class="form-control p-5">
+        <input type="hidden" name="tk" value="@Context.Request.Query["post_id"]" readonly required />
+        <label class="form-label">Cover Letter(optional)</label>
+        <div id="editor" style="height: 250px; border: 1px solid #ced4da; border-radius: 5px; padding: 10px; background: #fff;"></div>
+        <input type="hidden" asp-for="CoverLetter" id="hiddenContent">
+
+        <label for="">CV/Resume* (.pdf, .docx, .odt)</label>
+        <input type="file" class="form-control" name="cv">
+        <hr class="my-4" accept=".docx, .odt, .pdf">
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100">Apply Now</button>
+    </form>
+</div>
+
+<script>
+
+var quill = new Quill('#editor', {
+    theme: 'snow'
+});
+quill.on('text-change', function() {
+    document.querySelector('#hiddenContent').value = quill.root.innerHTML;
+});
+
+</script>

@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Admin Panel";
+    ViewData["Controller"] = "Auth";
+    ViewData["Action"] = "Admin Panel";
+}
+
+@await Html.PartialAsync("_Header", null, ViewData)
+
+<div class="container mt-5 shadow p-4 rounded bg-light">
+    <h2 class="text-center mb-4">Admin Panel</h2>
+    <div class="row">
+        <!-- First Row -->
+        <div class="col-md-4 text-center border-end">
+            <!-- User Image -->
+            <img src="@ViewData["ProfilePic"]" class="img-fluid rounded-circle mb-3" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;">
+
+            <!-- Buttons -->
+            <div class="d-grid gap-2">
+                <a href="/Auth/EditProfile" class="btn btn-success">Edit Profile</a>
+                <a href="/Auth/EditUser" class="btn btn-success">Edit Account</a>
+                <a href="/Auth/ChangePassword" class="btn btn-secondary">Change Password</a>
+                <a href="/Auth/DeleteUser" class="btn btn-danger">Delete Account</a>
+            </div>
+        </div>
+        <div class="col-md-8 text-center">
+            <!-- User Details -->
+            <h4>Name: <strong>@ViewData["FirstName"] @ViewData["LastName"]</strong></h4><br>
+            <h5>Email: <strong>@ViewData["Email"]</strong></h5><br>
+            <h5>Username: <strong>@ViewData["Username"]</strong></h5><br>
+            <h5>User Role: <strong>@ViewData["UserRole"]</strong></h5><br>
+            @if (ViewData["AboutUser"] != "") {
+                <h5>About User: <strong>@ViewData["AboutUser"]</strong></h5><br>
+            }
+            @if (ViewData["SocialLink"] != "" || ViewData["SocialLink"] != null) {
+                <h5>Social Link: <strong>@ViewData["SocialLink"]</strong></h5><br>
+            }
+        </div>
+    </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.hash === "#DisplayCards") {
+            const element = document.getElementById("DisplayCards");
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 300); // Delay ensures the page is fully loaded before scrolling
+            }
+        }
+    });
+</script>
+

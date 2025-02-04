@@ -6,6 +6,10 @@ using HireStreamDotNetProject.Data;
 using HireStreamDotNetProject.Utils;
 using HireStreamDotNetProject.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace HireStreamDotNetProject.Controllers
 {
@@ -13,9 +17,13 @@ namespace HireStreamDotNetProject.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly TokenService _tokenService;
-        public JobSeekerController(ApplicationDbContext db, TokenService tokenService) {
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public JobSeekerController(ApplicationDbContext db, TokenService tokenService, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor) {
             _db = db;
             _tokenService = tokenService;
+            _webHostEnvironment = webHostEnvironment;
+            _httpContextAccessor = httpContextAccessor;
         }
         // GET: /JobSeeker/
         public IActionResult Index()
@@ -139,6 +147,160 @@ namespace HireStreamDotNetProject.Controllers
                 .Reverse()
                 .ToList();
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult ApplyNow(int post_id) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "applicant") {
+                    TempData["error"] = "You need a applicant account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+
+            }
+            
+            var post = _db.JobPosts
+                .Include(o => o.JobCategory)
+                .FirstOrDefault(o => o.Id == post_id);
+
+            if (post == null) {
+                TempData["error"] = "No Record Found!";
+                return RedirectToAction("FindJobs");
+            }
+
+            var application_check = _db.JobApplications.FirstOrDefault(o => o.JobPost == post && o.User == user);
+            if (application_check != null) {
+                TempData["error"] = "You have already applied for this job post";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            ViewBag.JobPost = post;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApplyNow(int post_id, JobApplication obj, IFormFile cv) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "applicant") {
+                    TempData["error"] = "You need a applicant account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+
+            }
+            
+            var post = _db.JobPosts.Find(post_id);
+
+            if (post == null) {
+                TempData["error"] = "No Record Found!";
+                return RedirectToAction("FindJobs");
+            }
+            
+            var application_check = _db.JobApplications.FirstOrDefault(o => o.JobPost == post && o.User == user);
+            if (application_check != null) {
+                TempData["error"] = "You have already applied for this job post";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+
+            if (cv.Length > 10 * 1000 * 1024) {
+                TempData["error"] = "Resume/CV too large to process! File must be less than 10 MB";
+                return View();
+            }
+
+            string[] allowedExtensions = {".pdf", ".docx", ".odt"};
+
+            if (!allowedExtensions.Contains(Path.GetExtension(cv.FileName))) {
+                TempData["error"] = "Invalid File Type! only .pdf, .docx or .odt files are allowed";
+            }
+
+            string uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(cv.FileName)}";
+            string uploadsFolder = Path.Combine(
+                _webHostEnvironment.WebRootPath,
+                "uploads/Resumes"
+            );
+            string filePath = Path.Combine(
+                uploadsFolder,
+                uniqueFileName
+            );
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                await cv.CopyToAsync(fileStream);
+            
+            _db.JobApplications.Add(new JobApplication{
+                JobPost=post,
+                User=user,
+                CoverLetter=obj.CoverLetter,
+                ResumeUrl=uniqueFileName
+            });
+            _db.SaveChanges();
+            TempData["success"] = "Application Submitted! Good Luck";
+            return RedirectToAction(
+                "Dashboard",
+                "Auth"
+            );
         }
     
     }

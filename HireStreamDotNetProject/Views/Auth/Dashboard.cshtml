@@ -31,8 +31,8 @@
             @if (ViewData["AboutUser"] != "") {
                 <h5>About User: <strong>@ViewData["AboutUser"]</strong></h5><br>
             }
-            @if (ViewData["SocialLink"] != "") {
-                <h5>User Role: <strong>@ViewData["SocialLink"]</strong></h5><br>
+            @if (ViewData["SocialLink"] != "" || ViewData["SocialLink"] != null) {
+                <h5>Social Link: <strong>@ViewData["SocialLink"]</strong></h5><br>
             }
         </div>
     </div>

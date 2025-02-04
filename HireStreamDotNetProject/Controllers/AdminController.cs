@@ -124,6 +124,47 @@ namespace HireStreamDotNetProject.Controllers
                 "Auth"
             );
         }
+
+        public IActionResult AdminPanel() { // features to be included User Functions(View, Edit, Delete), Contact Query Cards, Job post cards(View, Edit, Delete), Job Application Cards(View, Edit, Delete)
+            string? auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (!user.IsAdmin && !user.IsStaff) {
+                    TempData["error"] = "Invalid Request!";
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Auth"
+                    );
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            return View();
+        }
     
     }
 }
