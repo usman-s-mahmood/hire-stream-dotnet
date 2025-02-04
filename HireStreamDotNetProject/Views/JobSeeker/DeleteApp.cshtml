@@ -1,0 +1,27 @@
+@{
+    ViewData["Controller"] = "JobSeeker";
+    ViewData["Action"] = "DeleteApplication";
+}
+
+@model HireStreamDotNetProject.Models.JobApplication
+
+@await Html.PartialAsync("_Header", null, ViewData);
+
+<div class="container shadow rounded mt-5 p-4" style="max-width: 500px; background: #f9f9f9;">
+    <h3 class="text-center mb-4 text-primary">Delete Job Application</h3>
+    <div asp-validation-summary="All" class="text-center text-danger"></div> 
+    <form action="" class="form-control p-4 mt-3" method="post">
+        <input type="hidden" name="app_id" value="@Context.Request.Query["app_id"]" readonly required />
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control outline-primary" placeholder="Enter your Password to continue" minlength="8" required name="password" >
+        </div>
+        <div class="text-center">
+            <hr>
+                <p class="fs-6 text-danger"><strong>Application Once Deleted Can't be recovered</strong></p>
+            <hr>
+        </div>
+        <button type="submit" class="btn btn-danger w-100">Delete</button>
+    </form>
+</div>
+

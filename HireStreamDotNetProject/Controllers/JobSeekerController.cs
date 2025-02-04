@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
+using DevOne.Security.Cryptography.BCrypt;
 
 namespace HireStreamDotNetProject.Controllers
 {
@@ -473,5 +474,149 @@ namespace HireStreamDotNetProject.Controllers
             );
         }
 
+        public IActionResult DeleteApp(int app_id) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "applicant") {
+                    TempData["error"] = "You need a applicant account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+
+            }
+
+            var app = _db.JobApplications.FirstOrDefault(o => o.Id == app_id);
+            System.Console.WriteLine($"Application Record: {app} | check {app == null}");
+            if (app == null) {
+                TempData["error"] = "No Record Found!";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+
+            if (app.User.Id != user.Id && !user.IsAdmin && !user.IsStaff) {
+                TempData["error"] = "Invalid Operation! Request Failed";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            ViewBag.JobPost = _db.JobPosts
+                .Include(o => o.JobCategory)
+                .FirstOrDefault(o => o.Id == app.JobPostId);
+            return View();
+        }
+        [HttpPost]
+        public IActionResult DeleteApp(int app_id, string password) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "applicant") {
+                    TempData["error"] = "You need a applicant account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+
+            }
+
+            var app = _db.JobApplications.FirstOrDefault(o => o.Id == app_id);
+            if (app == null) {
+                TempData["error"] = "No Record Found!";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+
+            if (app.User.Id != user.Id && !user.IsAdmin && !user.IsStaff) {
+                TempData["error"] = "Invalid Operation! Request Failed";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+            var check_password = BCryptHelper.CheckPassword(
+                password,
+                user.Password
+            );
+            if (!check_password) {
+                ModelState.AddModelError(
+                    "",
+                    "Invalid Password!"
+                );
+                TempData["error"] = "Invalid Password! Try Again";
+                return View();
+            }
+
+            if (app.ResumeUrl != "" || app.ResumeUrl != null) {
+                string oldFilePath = Path.Combine(
+                    Path.Combine(_webHostEnvironment.WebRootPath, "uploads/Resumes"),
+                    app.ResumeUrl
+                );
+                if (System.IO.File.Exists(oldFilePath))
+                    System.IO.File.Delete(oldFilePath);
+            }
+
+            _db.JobApplications.Remove(app);
+            _db.SaveChanges();
+
+            TempData["success"] = "Job Application Deleted Successfully!";
+            return RedirectToAction(
+                "Dashboard",
+                "Auth"
+            );
+        }
     }
 }

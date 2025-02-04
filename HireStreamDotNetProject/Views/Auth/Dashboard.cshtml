@@ -65,6 +65,10 @@
             </div>
         }  
     }
+    @if (ViewBag.CardCount <= 0 && ViewBag.Role == "recruiter") {
+        <p class="fs-4 text-center"><strong class="text-secondary">No Applications! Post a job Alert Now</strong></p>
+        <div class="text-center"><a href="/Talent/CreatePost" class="btn btn-success">Post Job</a></div>
+    }
 </div>
 
 <!-- Job Applications Section -->
@@ -87,6 +91,10 @@
                 </div>
             </div>
         }  
+    }
+    @if (ViewBag.CardCount <= 0 && ViewBag.Role == "applicant") {
+        <p class="fs-4 text-center"><strong class="text-secondary">No Applications! Apply Now for your dream Job</strong></p>
+        <div class="text-center"><a href="/JobSeeker/FindJobs" class="btn btn-success">Find Jobs</a></div>
     }
 </div>
 

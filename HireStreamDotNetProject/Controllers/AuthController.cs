@@ -676,7 +676,7 @@ namespace HireStreamDotNetProject.Controllers
             string profile_pic = " ";
             var request = _httpContextAccessor.HttpContext?.Request;
             var domain = $"{request?.Scheme}://{request?.Host}";
-            
+
             if (user.ProfilePic != "")
                 profile_pic = $"{domain}/uploads/ProfilePics/{user.ProfilePic}";
             else if (user.ProfilePic == "" && user.Gender == "Male")
@@ -711,11 +711,6 @@ namespace HireStreamDotNetProject.Controllers
                 int totalJobs = jobPosts.Count();
                 var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-                if (page > (int)Math.Ceiling(totalJobs / (double)pageSize)) {
-                    TempData["error"] = "Record Not Found!";
-                    return RedirectToAction("Dashboard");
-                }
-
                 ViewBag.Cards = paginatedJobs;
                 ViewBag.CardCount = totalJobs;
                 ViewBag.CurrentPage = page;
@@ -732,10 +727,6 @@ namespace HireStreamDotNetProject.Controllers
                 int totalJobs = jobPosts.Count();
                 var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-                if (page > (int)Math.Ceiling(totalJobs / (double)pageSize)) {
-                    TempData["error"] = "Record Not Found!";
-                    return RedirectToAction("Dashboard");
-                }
 
                 ViewBag.Cards = paginatedJobs;
                 ViewBag.CardCount = totalJobs;
