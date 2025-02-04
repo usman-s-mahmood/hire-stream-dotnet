@@ -722,6 +722,27 @@ namespace HireStreamDotNetProject.Controllers
                 ViewBag.CurrentPage = page;
                 ViewBag.TotalPages = (int)Math.Ceiling(totalJobs / (double)pageSize);
             }
+
+            if (user.UserRole == "applicant") {
+                int pageSize = 3;  // Show only 3 records per page
+                var jobPosts = _db.JobApplications
+                    .Include(j => j.JobPost)
+                    .Include(o => o.JobPost.JobCategory)
+                    .OrderByDescending(o => o.Id)
+                    .Where(o => o.User == user);
+                int totalJobs = jobPosts.Count();
+                var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                if (page > (int)Math.Ceiling(totalJobs / (double)pageSize)) {
+                    TempData["error"] = "Record Not Found!";
+                    return RedirectToAction("Dashboard");
+                }
+
+                ViewBag.Cards = paginatedJobs;
+                ViewBag.CardCount = totalJobs;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = (int)Math.Ceiling(totalJobs / (double)pageSize);
+            }
             return View();
         }
 

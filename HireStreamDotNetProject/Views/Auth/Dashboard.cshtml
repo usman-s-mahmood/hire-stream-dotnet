@@ -67,6 +67,30 @@
     }
 </div>
 
+<!-- Job Applications Section -->
+
+<div class="row mt-4" id="DisplayCards">
+    @if (ViewBag.CardCount > 0 && ViewBag.Role == "applicant") {
+        @foreach (var i in ViewBag.Cards) {
+            <div class="col-md-4 my-2 py-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@i.JobPost.Title</h5>
+                        <p class="card-text">@i.JobPost.JobCategory.Name</p>
+                        <p class="card-text">@i.JobPost.JobType</p>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <a href="/JobSeeker/EditApp?app_id=@i.Id" class="btn btn-sm btn-success">Edit</a>
+                        <a href="/JobSeeker/DeleteApp?app_id=@i.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }  
+    }
+</div>
+
+
 <!-- Pagination Controls -->
 @if (ViewBag.TotalPages > 1) {
     <div class="text-center mt-4">
