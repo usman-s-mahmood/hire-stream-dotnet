@@ -16,10 +16,14 @@ namespace HireStreamDotNetProject.Controllers
         protected readonly ApplicationDbContext _db;
         protected readonly IConfiguration _config;
         protected readonly Utils.TokenService _tokenService;
-        public AuthController(HireStreamDotNetProject.Data.ApplicationDbContext db, IConfiguration config, Utils.TokenService tokenService) {
+        protected readonly EmailService _emailService;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
+        public AuthController(HireStreamDotNetProject.Data.ApplicationDbContext db, IConfiguration config, Utils.TokenService tokenService, EmailService emailService, IHttpContextAccessor httpContextAccessor) {
             _db = db;
             _config = config;
             _tokenService = tokenService;
+            _emailService = emailService;
+            _httpContextAccessor = httpContextAccessor;
         }
         // GET: /Auth/
         public IActionResult Index()
@@ -30,7 +34,7 @@ namespace HireStreamDotNetProject.Controllers
         [HttpGet]
         public IActionResult Login() {
             string? auth_token = Request.Cookies["AuthCookie"];
-            System.Console.WriteLine($"auth_token==null: {auth_token == null}");
+            // System.Console.WriteLine($"auth_token==null: {auth_token == null}");
             if (auth_token != null) {
                 TempData["error"] = "You are already logged in!";
                 return RedirectToAction("Dashboard");
@@ -411,14 +415,95 @@ namespace HireStreamDotNetProject.Controllers
 
         [HttpGet]
         public IActionResult ForgotPassword() {
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token != null) {
+                TempData["error"] = "Invalid Request!";
+                return RedirectToAction("Dashboard");
+            }
             return View();
         }
         [HttpPost]
-        public IActionResult ForgotPassword(string email) {
+        public async Task<IActionResult> ForgotPassword(string email) {
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token != null) {
+                TempData["error"] = "Invalid Request!";
+                return RedirectToAction("Dashboard");
+            }
             var email_check = _db.Users.FirstOrDefault(o => o.Email == email);
             if (email_check == null)
                 return View();
-            
+
+            Guid uuid = Guid.NewGuid();
+            var request = _httpContextAccessor.HttpContext?.Request;
+            var domain = $"{request?.Scheme}://{request?.Host}";
+
+            var resetLink = $"{domain}/ResetPassword?tk={uuid}";
+            await _emailService.SendEmailAsync(
+                email,
+                "Password Recovery! Hire Stream",
+                $"Respected {email_check.FirstName}, \nA request of forgot password for your hire stream {email_check.UserRole} account was generated and it can be further processed by visiting this link({resetLink}) for changin you password. Dont't share this link with anyone and if you did not generated this request then kindly ignore this\n Best Regards, \n IT Team, HireStream"
+            );
+            System.Console.WriteLine($"Line 446, Debug point: tk = {uuid}\nReset Link: {resetLink}");
+            _db.ResetPasswords.Add(new ResetPassword{
+                Token = uuid,
+                User = email_check
+            });
+            _db.SaveChanges();
+            TempData["success"] = "Check your email for further instructions!";
+            return RedirectToAction(
+                "Index",
+                "Home"
+            );
+        }
+        
+        [HttpGet]
+        public IActionResult ResetPassword(string tk) {
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token != null) {
+                TempData["error"] = "Invalid Request!";
+                return RedirectToAction("Dashboard");
+            }
+            var record = _db.ResetPasswords.FirstOrDefault(o => o.Token == new Guid(tk));
+            if (record == null) {
+                TempData["error"] = "Invalid Operation!";
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
+
+            if (record.Expiration <= DateTime.UtcNow) {
+                System.Console.WriteLine($"Record Expired! Delete it in this block");
+                TempData["error"] = "Request Failed!";
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
+
+            var user = _db.Users.Find(record.User.Id);
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(string tk, string password) {
+            System.Console.WriteLine($"Values Received: {tk} | {password}");
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token != null) {
+                TempData["error"] = "Invalid Request!";
+                return RedirectToAction("Dashboard");
+            }
+            var record = _db.ResetPasswords.FirstOrDefault(o => o.Token == new Guid(tk));
+            if (record.Expiration <= DateTime.UtcNow) {
+                System.Console.WriteLine($"Record Expired! Delete it in this block");
+                TempData["error"] = "Request Failed!";
+                return RedirectToAction(
+                    "Index",
+                    "Home"
+                );
+            }
+
+            var user = _db.Users.Find(record.User.Id);
             return View();
         }
         public IActionResult CreateProfile() {
