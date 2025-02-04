@@ -676,8 +676,7 @@ namespace HireStreamDotNetProject.Controllers
             string profile_pic = " ";
             var request = _httpContextAccessor.HttpContext?.Request;
             var domain = $"{request?.Scheme}://{request?.Host}";
-
-            var resetLink = $"{domain}/";
+            
             if (user.ProfilePic != "")
                 profile_pic = $"{domain}/uploads/ProfilePics/{user.ProfilePic}";
             else if (user.ProfilePic == "" && user.Gender == "Male")

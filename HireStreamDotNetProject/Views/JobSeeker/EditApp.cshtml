@@ -1,40 +1,49 @@
 @{
     ViewData["Controller"] = "JobSeeker";
-    ViewData["Action"] = "ApplyNow";
+    ViewData["Action"] = "EditApplication";
 }
 
 @await Html.PartialAsync("_Header", null, ViewData)
 @model JobApplication
 
 <div class="container shadow rounded mt-5 p-4">
-    <h2 class="text-center">Apply Now: @ViewBag.JobPost.Title</h2>
+    <h2 class="text-center">Application For: @ViewBag.JobPost.Title</h2>
     <p class="text-center">Salary: <strong>@ViewBag.JobPost.Salary</strong></p>
     <p class="text-center">Department: <strong>@ViewBag.JobPost.JobCategory.Name</strong></p>
     <div class="text-center">
         <a href="/JobSeeker/ViewPost/@ViewBag.JobPost.Id" class="btn btn-success">Details</a>
     </div>
     <form action="" method="post" enctype="multipart/form-data" class="form-control p-5">
-        <input type="hidden" name="post_id" value="@Context.Request.Query["post_id"]" readonly required />
+        <input type="hidden" name="app_id" value="@Context.Request.Query["app_id"]" readonly required />
+        <input type="hidden" name="Id" readonly required>
         <label class="form-label">Cover Letter(optional)</label>
         <div id="editor" style="height: 250px; border: 1px solid #ced4da; border-radius: 5px; padding: 10px; background: #fff;"></div>
+    using Microsoft.EntityFrameworkCore.Metadata.Internal;
         <input type="hidden" asp-for="CoverLetter" id="hiddenContent">
 
         <label for="">CV/Resume* (.pdf, .docx, .odt)</label>
         <input type="file" class="form-control" name="cv" accept=".docx, .odt, .pdf">
         <small class="text-danger" id="cvError"></small>
+        <a href="@ViewBag.PrevCV" class="btn btn-primary my-2" target="_blank">Previous CV</a>
         <hr class="my-4">
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary w-100">Apply Now</button>
+        <button type="submit" class="btn btn-primary w-100">Update</button>
     </form>
 </div>
 
 <script>
 
+
 var quill = new Quill('#editor', {
-    theme: 'snow'
-});
-quill.on('text-change', function() {
-    document.querySelector('#hiddenContent').value = quill.root.innerHTML;
-});
+        theme: 'snow'
+    });
+
+    
+    var hiddenContent = document.querySelector('#hiddenContent').value;
+    quill.root.innerHTML = hiddenContent; 
+
+    quill.on('text-change', function() {
+        document.querySelector('#hiddenContent').value = quill.root.innerHTML;
+    });
 
 </script>
