@@ -602,6 +602,14 @@ namespace HireStreamDotNetProject.Controllers
                 return RedirectToAction("Login");
             }
             if (ProfilePic != null) {
+                if (user.ProfilePic != "" || user.ProfilePic != null) {
+                    string oldImagePath = Path.Combine(
+                        Path.Combine(_webHostEnvironment.WebRootPath, "uploads/ProfilePics"),
+                        user.ProfilePic
+                    );
+                    if (System.IO.File.Exists(oldImagePath))
+                        System.IO.File.Delete(oldImagePath);
+                }
                 if (ProfilePic.Length > 500 * 1024) {
                     TempData["error"] = "Profile Picture Must be less than 500 KB";
                     return RedirectToAction("EditProfile");
