@@ -12,13 +12,14 @@
         <!-- First Row -->
         <div class="col-md-4 text-center border-end">
             <!-- User Image -->
-            <img src="@Url.Content(ViewData["ProfilePic"].ToString())" class="img-fluid rounded-circle mb-3" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;">
+            <img src="@ViewData["ProfilePic"]" class="img-fluid rounded-circle mb-3" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;">
 
             <!-- Buttons -->
             <div class="d-grid gap-2">
+                <a href="/Auth/EditProfile" class="btn btn-success">Edit Profile</a>
                 <a href="/Auth/EditUser" class="btn btn-success">Edit Account</a>
-                <a href="/Auth/DeleteUser" class="btn btn-danger">Delete Account</a>
                 <a href="/Auth/ChangePassword" class="btn btn-secondary">Change Password</a>
+                <a href="/Auth/DeleteUser" class="btn btn-danger">Delete Account</a>
             </div>
         </div>
         <div class="col-md-8 text-center">
@@ -27,6 +28,12 @@
             <h5>Email: <strong>@ViewData["Email"]</strong></h5>
             <h5>Username: <strong>@ViewData["Username"]</strong></h5>
             <h5>User Role: <strong>@ViewData["UserRole"]</strong></h5>
+            @if (ViewData["AboutUser"] != "") {
+                <h5>About User: <strong>@ViewData["AboutUser"]</strong></h5>
+            }
+            @if (ViewData["SocialLink"] != "") {
+                <h5>User Role: <strong>@ViewData["SocialLink"]</strong></h5>
+            }
         </div>
     </div>
 
@@ -76,34 +83,6 @@
 
     </div>
 }
-    <!-- Third Row 
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Card 4</h5>
-                    <p class="card-text">Brief information about card 4.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Card 5</h5>
-                    <p class="card-text">Brief information about card 5.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Card 6</h5>
-                    <p class="card-text">Brief information about card 6.</p>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
 </div>
 
 <script>

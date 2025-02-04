@@ -4,23 +4,25 @@
 }
 
 @await Html.PartialAsync("_Header", null, ViewData);
+@model User
 
 <div class="container shadow rounded mt-5 p-4">
     <h2 class="text-center">Edit Your Profile</h2>
-    <form action="/Auth/EditProfile" method="POST" enctype="multipart/form-data" class="form-control p-5">
+    <form action="/Auth/EditProfile" method="post" enctype="multipart/form-data" class="form-control p-5">
         <!-- Profile Picture -->
-        <label for="profilePicture" class="form-label">Profile Picture</label>
-        <input type="file" class="form-control" id="profilePicture" name="profilePicture" accept="image/*">
+        <input type="hidden" asp-for="Id">
+        <label for="profilePicture" class="form-label">Profile Picture (.jpg, .jpeg, .png, .gif, .webp, .bmp)</label>
+        <input type="file" class="form-control" id="profilePicture" asp-for="ProfilePic" accept="image/*">
         <small class="text-muted">Upload a new profile picture to replace the existing one.</small><br>
-
+        <span id="fileSizeError" style="color: red; display: none;">File size must be less than 500KB!<br></span>
         <!-- About User -->
-        <label for="aboutUser" class="form-label mt-4">About You</label>
-        <textarea id="aboutUser" name="aboutUser" class="form-control" rows="4" placeholder="Write a short bio about yourself...">Existing bio content here...</textarea>
+        <label for="aboutUser" class="form-label mt-4">About You*</label>
+        <textarea id="aboutUser" asp-for="AboutUser" class="form-control" rows="4" placeholder="Write a short bio about yourself..." required></textarea>
         <small class="text-muted">Update your bio information.</small><br>
 
         <!-- Social Link -->
-        <label for="socialLink" class="form-label mt-4">Social Media Link</label>
-        <input type="url" id="socialLink" name="socialLink" class="form-control" placeholder="Enter your social media profile link" value="https://www.linkedin.com/in/currentuserlink">
+        <label for="socialLink" class="form-label mt-4">Social Media Link*</label>
+        <input type="url" id="socialLink" asp-for="SocialLink" class="form-control" placeholder="Enter your social media profile link" required>
         <small class="text-muted">Update your social media link.</small><br>
 
         <hr class="my-4">
@@ -28,3 +30,19 @@
         <button type="submit" class="btn btn-primary w-100">Update Profile</button>
     </form>
 </div>
+
+<script>
+    document.getElementById("profilePicture").addEventListener("change", function() {
+        let file = this.files[0]; 
+        let maxSize = 500 * 1024; 
+        let errorMessage = document.getElementById("fileSizeError");
+
+        if (file && file.size > maxSize) {
+            errorMessage.style.display = "inline";
+            this.value = ""; 
+        } 
+        else 
+            errorMessage.style.display = "none"; 
+        
+    });
+</script>

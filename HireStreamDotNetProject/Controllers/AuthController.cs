@@ -8,6 +8,10 @@ using DevOne.Security.Cryptography.BCrypt;
 using HireStreamDotNetProject.Utils;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace HireStreamDotNetProject.Controllers
 {
@@ -18,12 +22,14 @@ namespace HireStreamDotNetProject.Controllers
         protected readonly Utils.TokenService _tokenService;
         protected readonly EmailService _emailService;
         protected readonly IHttpContextAccessor _httpContextAccessor;
-        public AuthController(HireStreamDotNetProject.Data.ApplicationDbContext db, IConfiguration config, Utils.TokenService tokenService, EmailService emailService, IHttpContextAccessor httpContextAccessor) {
+        protected readonly IWebHostEnvironment _webHostEnvironment;
+        public AuthController(HireStreamDotNetProject.Data.ApplicationDbContext db, IConfiguration config, Utils.TokenService tokenService, EmailService emailService, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment) {
             _db = db;
             _config = config;
             _tokenService = tokenService;
             _emailService = emailService;
             _httpContextAccessor = httpContextAccessor;
+            _webHostEnvironment = webHostEnvironment;
         }
         // GET: /Auth/
         public IActionResult Index()
@@ -437,11 +443,11 @@ namespace HireStreamDotNetProject.Controllers
             var request = _httpContextAccessor.HttpContext?.Request;
             var domain = $"{request?.Scheme}://{request?.Host}";
 
-            var resetLink = $"{domain}/ResetPassword?tk={uuid}";
+            var resetLink = $"{domain}/Auth/ResetPassword?tk={uuid}";
             await _emailService.SendEmailAsync(
                 email,
                 "Password Recovery! Hire Stream",
-                $"Respected {email_check.FirstName}, \nA request of forgot password for your hire stream {email_check.UserRole} account was generated and it can be further processed by visiting this link({resetLink}) for changin you password. Dont't share this link with anyone and if you did not generated this request then kindly ignore this\n Best Regards, \n IT Team, HireStream"
+                $"Respected {email_check.FirstName}, \nA request of forgot password for your hire stream {email_check.UserRole} account was generated and it can be further processed by visiting this link({resetLink}) for changing your password. Dont't share this link with anyone and if you did not generated this request then kindly ignore this\n Best Regards, \n IT Team, HireStream"
             );
             System.Console.WriteLine($"Line 446, Debug point: tk = {uuid}\nReset Link: {resetLink}");
             _db.ResetPasswords.Add(new ResetPassword{
@@ -480,7 +486,6 @@ namespace HireStreamDotNetProject.Controllers
             }
 
             if (record.Expiration <= DateTime.UtcNow) {
-                System.Console.WriteLine($"Record Expired! Delete it in this block");
                 TempData["error"] = "Request Failed!";
                 return RedirectToAction(
                     "Index",
@@ -513,7 +518,6 @@ namespace HireStreamDotNetProject.Controllers
                 );
             }
             if (record.Expiration <= DateTime.UtcNow) {
-                System.Console.WriteLine($"Record Expired! Delete it in this block");
                 TempData["error"] = "Request Timed Out! Try Again";
                 return RedirectToAction(
                     "Index",
@@ -540,12 +544,100 @@ namespace HireStreamDotNetProject.Controllers
             TempData["success"] = "Password Changed Successfully!";
             return RedirectToAction("Login");
         }
-        public IActionResult CreateProfile() {
-            return View();
-        }
 
         public IActionResult EditProfile() {
-            return View();
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+                
+                string? email = data["email"];
+                string? username = data["username"];
+                
+                User? user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Login To Continue";
+                    return RedirectToAction("Login");
+                }
+
+                return View(user);
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                return RedirectToAction("Login");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(User model, IFormFile? ProfilePic) {
+            string? auth_token = Request.Cookies["AuthCookie"];
+            if (auth_token == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login");
+            }
+            User? user;
+            string? email;
+            string? username;
+            try {
+                var payload = _tokenService.DecryptToken(auth_token);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+                
+                email = data["email"];
+                username = data["username"];
+                
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Login To Continue";
+                    return RedirectToAction("Login");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                return RedirectToAction("Login");
+            }
+            if (ProfilePic != null) {
+                if (ProfilePic.Length > 500 * 1024) {
+                    TempData["error"] = "Profile Picture Must be less than 500 KB";
+                    return RedirectToAction("EditProfile");
+                }
+                string[] allowedExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"};
+
+                if (!allowedExtensions.Contains(Path.GetExtension(ProfilePic.FileName))) {
+                    TempData["error"] = "Invalid File Type!";
+                    return RedirectToAction("EditProfile");
+                }
+                // System.Console.WriteLine($"====\n====\n====\n{ProfilePic.FileName} | {Path.GetExtension(ProfilePic.FileName)}\n====\n====\n====\n");
+                string uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(ProfilePic.FileName)}";
+                System.Console.WriteLine($"Name of Profile Picture is: {uniqueFileName}");
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/ProfilePics");
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    await ProfilePic.CopyToAsync(fileStream);
+
+                user.ProfilePic = uniqueFileName;
+                user.AboutUser = model.AboutUser;
+                user.SocialLink = model.SocialLink;
+
+                _db.SaveChanges();
+                TempData["success"] = "Profile updated successfully!";
+                return RedirectToAction("Dashboard");
+            }
+            user.AboutUser = model.AboutUser;
+            user.SocialLink = model.SocialLink;
+
+            _db.SaveChanges();
+            TempData["success"] = "Profile updated successfully!";
+            return RedirectToAction("Dashboard");
         }
 
         [HttpGet]
@@ -574,17 +666,20 @@ namespace HireStreamDotNetProject.Controllers
             }
             
             string profile_pic = " ";
+            var request = _httpContextAccessor.HttpContext?.Request;
+            var domain = $"{request?.Scheme}://{request?.Host}";
 
+            var resetLink = $"{domain}/";
             if (user.ProfilePic != "")
-                profile_pic = user.ProfilePic;
+                profile_pic = $"{domain}/uploads/ProfilePics/{user.ProfilePic}";
             else if (user.ProfilePic == "" && user.Gender == "Male")
-                profile_pic = "~/assets/default-img/DefaultUserMale.png";
+                profile_pic = $"{domain}/assets/default-img/DefaultUserMale.png";
             
             else if (user.ProfilePic == "" && user.Gender == "Female")
-                profile_pic = "~/assets/default-img/DefaultUserFemale.png";
+                profile_pic = $"{domain}/assets/default-img/DefaultUserFemale.png";
 
             else if (user.ProfilePic == "" && user.Gender != "Male" && user.Gender != "Female")
-                profile_pic = "~/assets/default-img/DefaultUserMale.png";
+                profile_pic = $"{domain}/assets/default-img/DefaultUserMale.png";
             System.Console.WriteLine($"Value of profile pic: {profile_pic} | Value of user profile pic: {user.ProfilePic == ""}");
             ViewBag.Email = user.Email;
             ViewBag.Username = user.Username;
@@ -595,6 +690,8 @@ namespace HireStreamDotNetProject.Controllers
             ViewBag.UserRole = user.UserRole;
             ViewBag.IsAuth = true;
             ViewBag.Role = user.UserRole;
+            ViewBag.SocialLink = user.SocialLink;
+            ViewBag.AboutUser = user.AboutUser;
 
             if (user.UserRole == "recruiter") {
                 int pageSize = 3;  // Show only 3 records per page
