@@ -11,5 +11,6 @@ namespace HireStreamDotNetProject.Data {
         public DbSet<JobApplication> JobApplications { get; set; }
         public DbSet<JobCategory> JobCategories {get; set;}
         public DbSet<ResetPassword> ResetPasswords {get; set;}
+        public DbSet<Newsletter> Newsletters {get; set;}
     }
 }

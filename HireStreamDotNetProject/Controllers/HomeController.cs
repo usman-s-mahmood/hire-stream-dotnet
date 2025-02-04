@@ -75,6 +75,28 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpPost]
+    public async Task<IActionResult> NewsLetter(string? email) {
+        var email_check = _db.Newsletters.FirstOrDefault(o => o.email == email);
+        System.Console.WriteLine($"record found: {email_check?.email} | condition check: {email_check != null}");
+        
+        if (email_check != null) {
+            TempData["success"] = "You are already registered for our newsletter";
+            return RedirectToAction("Index");
+        }
+        await _em.SendEmailAsync(
+            email,
+            "Newsletter Subscription Completed For HireStream",
+            "Dear User, \nThank you for subscribing to our newsletter. We will notify you about the latest events, products and useful stuff. \nBest Regards, \nIT Team, \nHireStream"
+        );
+        _db.Newsletters.Add(new Newsletter{
+            email = email
+        });
+        _db.SaveChanges();
+        TempData["success"] = "Thank You for subscribing our newsletter";
+        return RedirectToAction("Index");
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

@@ -775,7 +775,6 @@ namespace HireStreamDotNetProject.Controllers
             }
 
             // return Json(new { isAuthenticated = false });
-        }
-    
+        }    
     }
 }

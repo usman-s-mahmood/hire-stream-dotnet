@@ -90,8 +90,8 @@
                 <p class="">Subscribe to our newsletter to get the latest updates </p>
                 <div>
 
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="text" placeholder="Enter Your Email" />
+                    <form class="d-flex" action="/Home/NewsLetter" method="post">
+                        <input class="form-control me-2" type="email" placeholder="Enter Your Email" name="email" required>
                         <button class="btn btn-success" type="submit">Submit</button>
                     </form>
                 </div>
@@ -155,7 +155,6 @@
                             <li>
                                 <hr class="dropdown-divider" />
                             </li>
-                            <li><a class="dropdown-item" href="/Seeker/FindJob">Find Jobs</a></li>
                             <li><a class="dropdown-item" href="/Auth/EditUser">Edit Account</a></li>
                             <li><a class="dropdown-item" href="/Auth/ChangePassword">Change Password</a></li>
                             <li><a class="dropdown-item" href="/Auth/Logout">Logout</a></li>

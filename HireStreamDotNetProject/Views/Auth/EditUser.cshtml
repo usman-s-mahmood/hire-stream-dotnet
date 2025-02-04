@@ -12,16 +12,16 @@
         <div asp-validation-summary="All" class="text-center text-danger"></div> 
         <input type="hidden" asp-for="Id" />
         <label for="">First Name</label>
-        <input type="text" class="form-control" asp-for="FirstName">
+        <input type="text" class="form-control" asp-for="FirstName" placeholder="Enter Your First Name">
         <span class="text-danger" asp-validation-for="FirstName"></span>
         <label for="">Last Name</label>
-        <input type="text" class="form-control" asp-for="LastName">
+        <input type="text" class="form-control" asp-for="LastName" placeholder="Enter Your Last Name">
         <span class="text-danger" asp-validation-for="LastName"></span>
         <label for="">Username</label>
-        <input type="text" class="form-control" asp-for="Username">
+        <input type="text" class="form-control" asp-for="Username" placeholder="Enter Your Username">
         <span class="text-danger" asp-validation-for="Username"></span>
         <label for="">Email</label>
-        <input type="email" class="form-control" asp-for="Email">
+        <input type="email" class="form-control" asp-for="Email" placeholder="Enter Your Email">
         <span class="text-danger" asp-validation-for="Email"></span>
         <button type="submit" class="btn btn-success">Submit</button>
     </form>
