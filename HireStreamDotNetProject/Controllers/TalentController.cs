@@ -667,6 +667,78 @@ namespace HireStreamDotNetProject.Controllers
                 "Auth"
             );
         }
-    
+        public IActionResult Applications(int post_id, int page = 1) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "recruiter") {
+                    TempData["error"] = "You need a recruiter account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var check_post = _db.JobPosts
+                .Include(j => j.User)
+                .FirstOrDefault(o => o.Id == post_id);
+            System.Console.WriteLine($"Values in check post: {check_post.Title} | Null check {check_post == null}");
+            if (check_post.UserId != user.Id && !user.IsAdmin && !user.IsStaff) {
+                TempData["error"] = "Invalid Operation! Request Failed";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+
+            if (check_post == null) {
+                TempData["error"] = "No Record Found!!!";
+                return RedirectToAction(
+                    "Dashboard",
+                    "Auth"
+                );
+            }
+
+            var jobPosts = _db.JobApplications
+                .Include(j => j.JobPost)
+                .Include(u => u.User)
+                .OrderByDescending(o => o.Id)
+                .Where(ob => ob.JobPostId == post_id);          
+            
+            int pageSize = 2;
+            int totalJobs = jobPosts.Count();
+            System.Console.WriteLine($"Total Records: {totalJobs}");
+            var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Cards = paginatedJobs;
+            ViewBag.CardCount = totalJobs;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalJobs / (double)pageSize);
+            ViewBag.post_id = post_id;
+            return View();
+        }
     }
 }
