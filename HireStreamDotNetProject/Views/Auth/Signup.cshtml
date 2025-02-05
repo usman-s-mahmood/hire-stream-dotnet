@@ -19,7 +19,10 @@
         </div>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control outline-primary" id="username" name="username" placeholder="Choose a username" minlength="8" required>
+            <input type="text" class="form-control outline-primary" id="username" name="username" 
+                placeholder="Choose a username" minlength="8" required 
+                pattern="^[a-z0-9.]+$" title="Username can only contain lowercase letters, numbers, and dots.">
+
         </div>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>

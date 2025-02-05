@@ -200,10 +200,22 @@ namespace HireStreamDotNetProject.Controllers
             string? auth_token = Request.Cookies["AuthCookie"];
 
             // System.Console.WriteLine($"token: {auth_token} | decrypted token: {_tokenService.DecryptToken(auth_token)}");
-            
+            string email;
+            string username;
+            User? user;
             try {
                 var payload = _tokenService.DecryptToken(auth_token);
                 var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
                 
             } catch {
                 Response.Cookies.Delete("AuthCookie");
@@ -229,8 +241,11 @@ namespace HireStreamDotNetProject.Controllers
                 TempData["error"] = "Provide a unique username";
                 return View(obj);
             }
-
-            _db.Users.Update(obj);
+            user.FirstName = obj.FirstName;
+            user.LastName = obj.LastName;
+            user.Username = obj.Username;
+            user.Email = obj.Email;
+            _db.Users.Update(user);
             _db.SaveChanges();
 
             TempData["success"] = "Details Updated!";

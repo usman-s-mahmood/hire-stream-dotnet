@@ -1,0 +1,50 @@
+@{
+    ViewData["Controller"] = "Talent";
+    ViewData["Action"] = "ApplicationDetails";
+}
+
+@await Html.PartialAsync("_Header", null, ViewData);
+
+<div class="container shadow rounded mt-5 p-4" style="max-width: 500px; background: #f9f9f9;">
+    <h3 class="text-center mb-4 text-primary">Application Details</h3>
+    <div asp-validation-summary="All" class="text-center text-danger"></div> 
+    <div action="" class="form-control p-4 mt-3">
+        <div class="text-center">
+        @if(ViewBag.Application.User.ProfilePic != "" || ViewBag.Application.User.ProfilePic != null) {
+            <img src="/uploads/ProfilePics/@ViewBag.Application.User.ProfilePic" class="img-fluid rounded-circle" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;">  
+        }
+        @if((ViewBag.Application.User.ProfilePic == "" || ViewBag.Application.User.ProfilePic == null) && ViewBag.Application.User.Gender == "Male") {
+            <img src="/assets/default-img/DefaultUserMale.png" class="img-fluid rounded-circle" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;"> 
+        }
+        @if((ViewBag.Application.User.ProfilePic == "" || ViewBag.Application.User.ProfilePic == null) && ViewBag.Application.User.Gender == "Female") {
+            <img src="/assets/default-img/DefaultUserFemale.png" class="img-fluid rounded-circle" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;"> 
+        }
+        @if((ViewBag.Application.User.ProfilePic == "" || ViewBag.Application.User.ProfilePic == null) && (ViewBag.Application.User.Gender != "Female" && ViewBag.Application.User.Gender != "Male")) {
+            <img src="/assets/default-img/DefaultUserMale.png" class="img-fluid rounded-circle" alt="User Image" style="width: 150px; height: 150px; object-fit: cover;"> 
+        }
+        <p class="fs-4">Name: <strong>@ViewBag.Application.User.FirstName @ViewBag.Application.User.LastName</strong></p>
+        <p class="fs-4">Email: <strong>@ViewBag.Application.User.Email</strong></p>
+        <p class="fs-4">Username: <strong>@ViewBag.Application.User.Username</strong></p>
+        <p class="fs-4">Applied On: <strong>@ViewBag.Application.AppliedOn</strong></p>
+        <p class="fs-4 text-primary"><a href="/uploads/Resumes/@ViewBag.Application.ResumeUrl" target="_blank" class="nav-link">Download Resume</a></p>
+        <p class="fs-4">Cover Letter:</p>
+        <div class="text-dark bg-secondary rounded p-5">
+            @Html.Raw(ViewBag.Application.CoverLetter)
+        </div>
+        <p class="fs-4">Application Status: @ViewBag.Application.Status</p>
+        <form action="/Talent/UpdateStatus" method="post">
+            <input type="hidden" value="@ViewBag.Application.Id" name="app_id" required>
+            <select name="status" id="" class="form-control" value="@ViewBag.Application.Status" required>
+                <option value="" disabled>Specify one option</option>
+                <option value="Pending">Pending</option>
+                <option value="Shortlist">Shortlist</option>
+                <option value="Interviewing">Interviewing</option>
+                <option class="text-success" value="Selected">Selected</option>
+                <option value="Rejected" class="text-danger">Rejected</option>
+            </select>
+            <p class="text-muted">Select an option to update status</p>
+            <button type="submit" class="btn btn-success w-100">Update Status</button>
+        </form>
+        </div>
+    </div>
+</div>

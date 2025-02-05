@@ -15,9 +15,11 @@ namespace HireStreamDotNetProject.Controllers
         
         TokenService _tokenService;
         ApplicationDbContext _db;
-        public TalentController(ApplicationDbContext db, TokenService tokenService) {
+        EmailService _emailService;
+        public TalentController(ApplicationDbContext db, TokenService tokenService, EmailService emailService) {
             _db = db;
             _tokenService = tokenService;
+            _emailService = emailService;
         }
         // GET: /Talent/
         public IActionResult Index()
@@ -739,6 +741,128 @@ namespace HireStreamDotNetProject.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling(totalJobs / (double)pageSize);
             ViewBag.post_id = post_id;
             return View();
+        }
+
+        public IActionResult AppDetails(int app_id) {
+            var auth_cookie = Request.Cookies["AuthCookie"];
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "recruiter") {
+                    TempData["error"] = "You need a recruiter account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var app = _db.JobApplications
+                .Include(o => o.JobPost)
+                .Include(o => o.JobPost.User)
+                .Include(o => o.User)
+                .FirstOrDefault(o => o.Id == app_id);
+
+            if (app.JobPost.UserId != user.Id && !user.IsAdmin && !user.IsStaff) {
+                TempData["error"] = "Invalid Request! Process Failed";
+                return Redirect("/Auth/Dashboard");
+            }
+
+            if (app == null) {
+                TempData["error"] = "No record found!";
+                return Redirect($"/Talent/Applications?post_id={app.JobPost.Id}");
+            }
+            ViewBag.Application = app;
+            return View();
+        }
+    
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int app_id, string status) {
+                        var auth_cookie = Request.Cookies["AuthCookie"];
+            if (auth_cookie == null) {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (user.UserRole != "recruiter") {
+                    TempData["error"] = "You need a recruiter account to perform this operation";
+                    return RedirectToAction("Dashboard", "Auth");
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            var app = _db.JobApplications
+                .Include(o => o.JobPost)
+                .Include(o => o.User)
+                .FirstOrDefault(o => o.Id == app_id);
+
+            if (app == null) {
+                TempData["error"] = "No Record found!";
+                return Redirect("/Auth/Dashboard");
+            }
+
+            if (app.JobPost.UserId != user.Id && !user.IsAdmin && !user.IsStaff) {
+                TempData["error"] = "Invalid Request! Process Failed";
+                return Redirect("/Auth/Dashboard");
+            }
+
+            if (app.Status == status) {
+                TempData["error"] = $"{status} is already the status of this application!";
+                return Redirect($"/Talent/AppDetails?app_id={app_id}");
+            }
+
+            await _emailService.SendEmailAsync(
+                app.User.Email,
+                "Application Status At HireStream",
+                $"Dear {app.User.FirstName}, \nThe Status of your application for job post: {app.JobPost.Title} has been updated from {app.Status} to {status}. \nBest Regards, \nIT Team (Hire Stream)"
+            );
+
+            app.Status = status;
+            _db.JobApplications.Update(app);
+            _db.SaveChanges();
+            TempData["success"] = "Status for application is now updated!";
+            return Redirect("/Auth/Dashboard");
         }
     }
 }

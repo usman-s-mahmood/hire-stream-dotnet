@@ -18,7 +18,8 @@
         <input type="text" class="form-control" asp-for="LastName" placeholder="Enter Your Last Name">
         <span class="text-danger" asp-validation-for="LastName"></span>
         <label for="">Username</label>
-        <input type="text" class="form-control" asp-for="Username" placeholder="Enter Your Username">
+        <input type="text" class="form-control outline-primary" id="username" asp-for="Username" placeholder="Choose a username" minlength="8" required      pattern="^[a-z0-9.]+$" title="Username can only contain lowercase letters, numbers, and dots.">
+
         <span class="text-danger" asp-validation-for="Username"></span>
         <label for="">Email</label>
         <input type="email" class="form-control" asp-for="Email" placeholder="Enter Your Email">
