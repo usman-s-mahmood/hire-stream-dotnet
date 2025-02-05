@@ -66,13 +66,28 @@
                             @i.RegisterDate
                         </td>
                         <td>
-                            @i.IsAdmin
+                            @if (!i.IsAdmin) {
+                                <a href="/Admin/AdminStatus?user_id=@i.Id" class="btn btn-sm btn-success">Make Admin</a>
+                            }
+                            @if (i.IsAdmin) {
+                                <a href="/Admin/AdminStatus?user_id=@i.Id" class="btn btn-sm btn-danger">Remove Admin</a>
+                            }
                         </td>
                         <td>
-                            @i.IsStaff
+                            @if (!i.IsStaff) {
+                                <a href="/Admin/StaffStatus?user_id=@i.Id" class="btn btn-sm btn-success">Make Staff</a>
+                            }
+                            @if (i.IsStaff) {
+                                <a href="/Admin/StaffStatus?user_id=@i.Id" class="btn btn-sm btn-danger">Remove Staff</a>
+                            }
                         </td>
                         <td>
-                            @i.IsActive
+                            @if (!i.IsActive) {
+                                <a href="/Admin/SuspendStatus?user_id=@i.Id" class="btn btn-sm btn-success">Active User</a>
+                            }
+                            @if (i.IsActive) {
+                                <a href="/Admin/SuspendStatus?user_id=@i.Id" class="btn btn-sm btn-danger">Suspend User</a>
+                            }
                         </td>
                         <td>
                             @i.UserRole

@@ -257,5 +257,197 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
     
+        public IActionResult AdminStatus(int user_id) {
+                        string? auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (!user.IsAdmin && !user.IsStaff) {
+                    TempData["error"] = "Invalid Request!";
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Auth"
+                    );
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            var target_user = _db.Users.Find(user_id);
+            if (target_user == null) {
+                TempData["error"] = "Record Not Found!";
+                return Redirect("/Admin/AdminPanel");
+            }
+
+            if (target_user.Username == "usman.shahid" && target_user.Email == "usmanshahid027@outlook.com") {
+                TempData["error"] = "Invalid Operation For Super User!";
+                return Redirect("/Admin/UserDetails");
+            }
+
+            if (target_user.IsAdmin) {
+                target_user.IsAdmin = false;
+                _db.Users.Update(target_user);
+                _db.SaveChanges();
+                TempData["success"] = $"{target_user.Username} is not an Admin anymore";
+                return Redirect($"/Admin/UserDetails?query={target_user.Username}");
+            }
+            target_user.IsAdmin = true;
+            _db.Users.Update(target_user);
+            _db.SaveChanges();
+            TempData["success"] = $"{target_user.Username} is promoted to admin!";
+            return Redirect($"/Admin/UserDetails?query={target_user.Username}");
+        }
+
+
+        public IActionResult StaffStatus(int user_id) {
+            string? auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (!user.IsAdmin && !user.IsStaff) {
+                    TempData["error"] = "Invalid Request!";
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Auth"
+                    );
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            var target_user = _db.Users.Find(user_id);
+            if (target_user == null) {
+                TempData["error"] = "Record Not Found!";
+                return Redirect("/Admin/AdminPanel");
+            }
+
+            if (target_user.Username == "usman.shahid" && target_user.Email == "usmanshahid027@outlook.com") {
+                TempData["error"] = "Invalid Operation For Super User!";
+                return Redirect("/Admin/UserDetails");
+            }
+
+            if (target_user.IsStaff) {
+                target_user.IsStaff = false;
+                _db.Users.Update(target_user);
+                _db.SaveChanges();
+                TempData["success"] = $"{target_user.Username} is not a Staff User anymore";
+                return Redirect($"/Admin/UserDetails?query={target_user.Username}");
+            }
+            target_user.IsStaff = true;
+            _db.Users.Update(target_user);
+            _db.SaveChanges();
+            TempData["success"] = $"{target_user.Username} is promoted to Staff User!";
+            return Redirect($"/Admin/UserDetails?query={target_user.Username}");
+        }
+    
+        public IActionResult SuspendStatus(int user_id) {
+            string? auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (!user.IsAdmin && !user.IsStaff) {
+                    TempData["error"] = "Invalid Request!";
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Auth"
+                    );
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            var target_user = _db.Users.Find(user_id);
+            if (target_user == null) {
+                TempData["error"] = "Record Not Found!";
+                return Redirect("/Admin/AdminPanel");
+            }
+
+            if (target_user.Username == "usman.shahid" && target_user.Email == "usmanshahid027@outlook.com") {
+                TempData["error"] = "Invalid Operation For Super User!";
+                return Redirect("/Admin/UserDetails");
+            }
+
+            if (target_user.IsActive) {
+                target_user.IsActive = false;
+                _db.Users.Update(target_user);
+                _db.SaveChanges();
+                TempData["success"] = $"{target_user.Username} is not an Active User anymore";
+                return Redirect($"/Admin/UserDetails?query={target_user.Username}");
+            }
+            target_user.IsActive = true;
+            _db.Users.Update(target_user);
+            _db.SaveChanges();
+            TempData["success"] = $"{target_user.Username} is now an Active User!";
+            return Redirect($"/Admin/UserDetails?query={target_user.Username}");
+        }
+    
+
+
     }
 }
