@@ -1,0 +1,81 @@
+
+
+@{
+    ViewData["Title"] = "Admin Panel";
+    ViewData["Controller"] = "Admin";
+    ViewData["Action"] = "JobPosts";
+}
+
+@await Html.PartialAsync("_Header", null, ViewData)
+
+
+<input type="hidden" id="DisplayCards">
+
+
+<div class="container">
+    <div class="row mt-4" >
+    @if (ViewBag.CardCount > 0) {
+        @foreach (var i in ViewBag.Cards) {
+            <div class="col-md-4 my-2 py-3">
+                <a href="/JobSeeker/ViewPost/@i.Id" class="nav-link">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@i.Title</h5>
+                        <p class="card-text">@i.JobCategory.Name</p>
+                        <p class="card-text">@i.JobType</p>
+                        <p class="card-text">Posted By: @i.User.Username</p>
+                        <p class="card-text">Posted On: @i.PostDate</p>
+                    </div>
+                    <hr>
+                    <div class="text-center pb-3">
+                        <a href="/JobSeeker/ViewPost/@i.Id" class="btn btn-success btn-sm">View</a>
+                        <a href="/Talent/EditPost/@i.Id" class="btn btn-sm btn-success">Edit</a>
+                        @if (i.IsActive) {
+                            <a href="/Talent/HidePost/@i.Id" class="btn btn-sm btn-secondary">Hide </a>
+                        }
+                        @if (!i.IsActive) {
+                            <a href="/Talent/UnHidePost/@i.Id" class="btn btn-sm btn-secondary">UnHide </a>
+                        }
+                        <a href="/Talent/Applications?post_id=@i.Id" class="btn btn-sm btn-primary">Applications</a>
+                        <a href="/Talent/DeletePost/@i.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </div>
+                </a>
+            </div>
+        }  
+    }
+    @if (ViewBag.CardCount <= 0) {
+        <p class="fs-4 text-center"><strong class="text-secondary">No Applications! Post a job Alert Now</strong></p>
+        <div class="text-center"><a href="/Talent/CreatePost" class="btn btn-success">Post Job</a></div>
+    }
+</div>
+
+@if (ViewBag.TotalPages > 1) {
+    <div class="text-center mt-4">
+        @if (ViewBag.CurrentPage > 1) {
+        @* <a href="@Url.Action("Dashboard", new { page = ViewBag.CurrentPage - 1 })#DisplayCards" class="btn btn-danger">Previous</a> *@
+        <a href="/Admin/JobPosts?page=@(ViewBag.CurrentPage - 1)#DisplayCards" class="btn btn-danger">Previous</a>
+
+    }
+    Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+    @if (ViewBag.CurrentPage < ViewBag.TotalPages) {
+        @* <a href="@Url.Action("Dashboard", new { page = ViewBag.CurrentPage + 1 })#DisplayCards" class="btn btn-danger">Next</a> *@
+        <a href="/Admin/JobPosts?page=@(ViewBag.CurrentPage + 1)#DisplayCards" class="btn btn-danger">Next</a>
+    }
+
+    </div>
+}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.hash === "#DisplayCards") {
+            const element = document.getElementById("DisplayCards");
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 300); // Delay ensures the page is fully loaded before scrolling
+            }
+        }
+    });
+</script>

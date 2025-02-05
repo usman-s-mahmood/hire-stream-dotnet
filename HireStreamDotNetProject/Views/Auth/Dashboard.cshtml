@@ -34,6 +34,11 @@
             @if (ViewData["SocialLink"] != "" || ViewData["SocialLink"] != null) {
                 <h5>Social Link: <strong>@ViewData["SocialLink"]</strong></h5><br>
             }
+            @if (ViewBag.IsAdmin) {
+                <div class="text-center">
+                    <a href="/Admin" class="btn btn-success">Admin Panel</a>
+                </div>
+            }
         </div>
     </div>
 
@@ -52,6 +57,7 @@
                     </div>
                     <hr>
                     <div class="text-center pb-3">
+                        <a href="/JobSeeker/ViewPost/@i.Id" class="btn btn-success btn-sm">View</a>
                         <a href="/Talent/EditPost/@i.Id" class="btn btn-sm btn-success">Edit</a>
                         @if (i.IsActive) {
                             <a href="/Talent/HidePost/@i.Id" class="btn btn-sm btn-secondary">Hide </a>

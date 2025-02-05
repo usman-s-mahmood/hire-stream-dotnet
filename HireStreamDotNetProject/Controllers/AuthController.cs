@@ -714,7 +714,9 @@ namespace HireStreamDotNetProject.Controllers
             ViewBag.Role = user.UserRole;
             ViewBag.SocialLink = user.SocialLink;
             ViewBag.AboutUser = user.AboutUser;
-
+            ViewBag.IsAdmin = false;
+            if (user.IsAdmin) 
+                ViewBag.IsAdmin = true;
             if (user.UserRole == "recruiter") {
                 int pageSize = 3;  // Show only 3 records per page
                 var jobPosts = _db.JobPosts
@@ -733,7 +735,7 @@ namespace HireStreamDotNetProject.Controllers
             }
 
             if (user.UserRole == "applicant") {
-                int pageSize = 3;  // Show only 3 records per page
+                int pageSize = 3;
                 var jobPosts = _db.JobApplications
                     .Include(j => j.JobPost)
                     .Include(o => o.JobPost.JobCategory)
@@ -741,7 +743,6 @@ namespace HireStreamDotNetProject.Controllers
                     .Where(o => o.User == user);
                 int totalJobs = jobPosts.Count();
                 var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
 
                 ViewBag.Cards = paginatedJobs;
                 ViewBag.CardCount = totalJobs;

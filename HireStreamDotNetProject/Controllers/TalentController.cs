@@ -375,6 +375,7 @@ namespace HireStreamDotNetProject.Controllers
                     "Auth"
                 );
             }
+            System.Console.WriteLine($"user password receive: {password} | check password: {BCryptHelper.CheckPassword(password, user.Password)} | user value: {user.Username}");
             var password_check = BCryptHelper.CheckPassword(
                 password,
                 user.Password
