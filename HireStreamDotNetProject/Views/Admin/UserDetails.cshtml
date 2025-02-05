@@ -1,0 +1,101 @@
+
+@{
+    ViewData["Controller"] = "Admin";
+    ViewData["Action"] = "UserDetails";
+    int SR = 1;
+}
+
+@await Html.PartialAsync("_Header", null, ViewData)
+
+
+<div class="container">
+    <div class="text-center">
+        <form action="" class="form-control d-flex">
+            <input type="text" class="form-control mx-2" name="query" placeholder="search a user">
+            <button type="submit" class="btn btn-success">Search</button>
+            <a class="btn btn-success mx-1" href="/Admin/UserDetails">clear</a>
+        </form>
+    </div>
+    <div class="table-responsive" id="DisplayCards">
+        <table class="table table-striped table-bordered table-hover mx-auto">
+            <thead class="thead-dark text-center">
+                <tr>
+                    <th>SR#</th>
+                    <th>Profile Pic</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Registered on</th>
+                    <th>IsAdmin</th>
+                    <th>IsStaff</th>
+                    <th>IsActive</th>
+                    <th>Account Type</th>
+                    <th>About User</th>
+                    <th>Social Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in ViewBag.Users) {
+                    <tr>
+                        <td>
+                            @(SR++)
+                        </td>
+                        <td>
+                            @{
+                                string profilePic = i.ProfilePic;
+                                string gender = i.Gender;
+                                string defaultImg = (gender == "Female") ? "/assets/default-img/DefaultUserFemale.png" : "/assets/default-img/DefaultUserMale.png";
+                                string imageSrc = !string.IsNullOrEmpty(profilePic) ? $"/uploads/ProfilePics/{profilePic}" : defaultImg;
+                            }
+                            <img src="@imageSrc" class="img-fluid rounded-circle" alt="User Image" style="width: 50px; height: 50px; object-fit: cover;">
+                        </td>
+                        <td>
+                            @i.FirstName
+                        </td>
+                        <td>
+                            @i.LastName
+                        </td>
+                        <td>
+                            @i.Email
+                        </td>
+                        <td>
+                            @i.Username
+                        </td>
+                        <td>
+                            @i.RegisterDate
+                        </td>
+                        <td>
+                            @i.IsAdmin
+                        </td>
+                        <td>
+                            @i.IsStaff
+                        </td>
+                        <td>
+                            @i.IsActive
+                        </td>
+                        <td>
+                            @i.UserRole
+                        </td>
+                        <td>
+                            @i.AboutUser
+                        </td>
+                        <td>
+                            @i.SocialLink
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+        <div class="text-center mt-4">
+            @if (ViewBag.CurrentPage > 1) {
+                <a href="/Admin/UserDetails?page=@(ViewBag.CurrentPage - 1)&query=@ViewBag.Query#DisplayCards" class="btn btn-danger">Previous</a>
+            }
+            Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages) {
+                <a href="/Admin/UserDetails?page=@(ViewBag.CurrentPage + 1)&query=@ViewBag.Query#DisplayCards" class="btn btn-danger">Next</a>
+            }
+        </div>
+
+</div>

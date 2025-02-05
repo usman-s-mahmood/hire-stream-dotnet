@@ -799,7 +799,7 @@ namespace HireStreamDotNetProject.Controllers
     
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int app_id, string status) {
-                        var auth_cookie = Request.Cookies["AuthCookie"];
+            var auth_cookie = Request.Cookies["AuthCookie"];
             if (auth_cookie == null) {
                 TempData["error"] = "Login To Continue!";
                 return RedirectToAction("Login", "Auth");

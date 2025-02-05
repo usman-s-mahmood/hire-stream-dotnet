@@ -130,10 +130,7 @@ namespace HireStreamDotNetProject.Controllers
                 .Distinct();
             int totalJobs = jobPosts.Count();
             var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-            if (page > (int) Math.Ceiling(totalJobs/(double)pageSize)) {
-                TempData["error"] = "Record Not Found!";
-                return RedirectToAction("FindJobs");
-            }
+
             ViewBag.Cards = paginatedJobs;
             ViewBag.CardCount = totalJobs;
             ViewBag.CurrentPage = page;
