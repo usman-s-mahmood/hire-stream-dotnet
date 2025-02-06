@@ -503,5 +503,61 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
 
+        public IActionResult JobApps(int page=1) {
+            string? auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (!user.IsAdmin && !user.IsStaff) {
+                    TempData["error"] = "Invalid Request!";
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Auth"
+                    );
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            var jobPosts = _db.JobApplications
+                .AsQueryable()
+                .Include(o => o.JobPost)
+                .Include(o => o.User)
+                .Include(o => o.JobPost.User)
+                .OrderByDescending(o => o.Id);
+            int pageSize = 5;
+            int totalJobs = jobPosts.Count();
+            System.Console.WriteLine($"Total Records: {totalJobs}");
+            var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Cards = paginatedJobs;
+            ViewBag.CardCount = totalJobs;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalJobs / (double)pageSize);
+            return View();
+        }
+
     }
 }
