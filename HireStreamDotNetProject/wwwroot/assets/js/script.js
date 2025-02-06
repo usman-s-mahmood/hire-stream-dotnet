@@ -39,12 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const slider = document.querySelector('.logo-slider');
-    const logos = slider.innerHTML;
-    slider.innerHTML += logos; // Duplicate logos for seamless animation
-});
-
 } catch {
     
 }

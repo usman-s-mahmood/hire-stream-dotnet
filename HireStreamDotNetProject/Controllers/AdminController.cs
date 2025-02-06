@@ -559,5 +559,104 @@ namespace HireStreamDotNetProject.Controllers
             return View();
         }
 
+        public IActionResult Newsletter(int page = 1) {
+            string? auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (!user.IsAdmin && !user.IsStaff) {
+                    TempData["error"] = "Invalid Request!";
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Auth"
+                    );
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            var newsletters = _db.Newsletters.AsQueryable();
+            int pageSize = 5;
+            int totalEmails = newsletters.Count();
+            var paginatedEmails = newsletters.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Cards = paginatedEmails;
+            ViewBag.CardCount = totalEmails;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalEmails / (double)pageSize);
+            return View();
+        }
+
+        public IActionResult ContactQueries(int page = 1) {
+            string? auth_cookie = Request.Cookies["AuthCookie"];
+            Console.WriteLine($"value of auth token: {auth_cookie}");
+            if (auth_cookie == "") {
+                TempData["error"] = "Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            string? email;
+            string? username;
+            User? user;
+
+            try {
+                var payload = _tokenService.DecryptToken(auth_cookie);
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(payload);
+
+                email = data["email"];
+                username = data["username"];
+
+                user = _db.Users.FirstOrDefault(o => o.Email == email && o.Username == username);
+
+                if (user == null) {
+                    Response.Cookies.Delete("AuthCookie");
+                    TempData["error"] = "Authentication Failed!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
+                if (!user.IsAdmin && !user.IsStaff) {
+                    TempData["error"] = "Invalid Request!";
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Auth"
+                    );
+                }
+            } catch {
+                Response.Cookies.Delete("AuthCookie");
+                TempData["error"] = "Authentication Failed! Login To Continue!";
+                return RedirectToAction("Login", "Auth");
+            }
+            var contact_queries = _db.Contacts.AsQueryable();
+            int pageSize = 5;
+            int totalEmails = contact_queries.Count();
+            var paginatedEmails = contact_queries.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Cards = paginatedEmails;
+            ViewBag.CardCount = totalEmails;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalEmails / (double)pageSize);
+            return View();
+        }
     }
 }
