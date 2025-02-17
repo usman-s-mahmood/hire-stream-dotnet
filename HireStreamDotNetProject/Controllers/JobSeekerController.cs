@@ -42,10 +42,10 @@ namespace HireStreamDotNetProject.Controllers
                 .Reverse();
             int totalJobs = jobPosts.Count();
             var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-            if (page > (int) Math.Ceiling(totalJobs/(double)pageSize)) {
-                TempData["error"] = "Record Not Found!";
-                return RedirectToAction("FindJobs");
-            }
+            // if (page > (int) Math.Ceiling(totalJobs/(double)pageSize)) {
+            //     TempData["error"] = "Record Not Found!";
+            //     return RedirectToAction("FindJobs");
+            // }
             ViewBag.Cards = paginatedJobs;
             ViewBag.CardCount = totalJobs;
             ViewBag.CurrentPage = page;
@@ -124,10 +124,10 @@ namespace HireStreamDotNetProject.Controllers
                 .Include(j => j.JobCategory)
                 .Where(o => 
                     EF.Functions.Like(o.Title, '%' + query + '%') ||
-                    EF.Functions.Like(o.Content, '%' + query + '%')
+                    EF.Functions.Like(o.Content, '%' + query + '%') 
                 )
                 .OrderByDescending(o => o.Id)
-                .Distinct();
+                .Distinct(); 
             int totalJobs = jobPosts.Count();
             var paginatedJobs = jobPosts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 

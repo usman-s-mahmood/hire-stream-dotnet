@@ -31,8 +31,23 @@
 <script>
 
 var quill = new Quill('#editor', {
-    theme: 'snow'
-});
+        theme: 'snow',
+        placeholder: 'Write your cover letter here...',
+        modules: {
+            toolbar: [
+                [{ 'font': [] }, { 'size': [] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                [{ 'align': [] }],
+                ['blockquote', 'code-block'],
+                ['clean'] 
+            ]
+        }
+    });
 quill.on('text-change', function() {
     document.querySelector('#hiddenContent').value = quill.root.innerHTML;
 });

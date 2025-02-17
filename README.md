@@ -1,126 +1,155 @@
+# **HireStream** - Your Dream Job Finder! 🚀  
 
-# **HireStream** - Your Dream Job Finder! 🚀
+[![Live Site](https://img.shields.io/badge/Live%20Demo-HireStream-brightgreen)](https://hirestream-h6f7gtd5azara2c9.westindia-01.azurewebsites.net/)  
 
-[![Website](https://img.shields.io/badge/Live%20Demo-hstream.bsite.net-brightgreen)](https://hstream.bsite.net/)
+**HireStream** is a modern **ASP.NET Core MVC** platform designed to streamline job searching and hiring. It provides **job seekers** with an intuitive way to find opportunities and **recruiters** with a powerful tool to manage applicants.  
 
-**HireStream** is a modern **ASP.NET Core MVC** platform that connects talented individuals with top firms. It simplifies the hiring process by providing **job seekers** a seamless way to find jobs and **recruiters** an efficient way to hire.
-
----
-
-## **📌 Key Features**
-
-✅ **Comprehensive Authentication System**
-
-* Secure **password hashing** with `BCrypt`
-* **Forgot password** functionality
-* **Edit account & profile**
-* **Delete account** feature for privacy-conscious users
-
-✅ **Dedicated Role-Based Controllers**
-
-* **Talent Controller** - Designed for **Recruiters** to manage job listings
-* **JobSeeker Controller** - Tailored for **Applicants** to browse and apply for jobs
-
-✅ **Powerful Job Search & Pagination**
-
-* **Paginated job listings** for smooth navigation
-* **Search functionality** to find jobs efficiently
-
-✅ **Robust Admin Panel** 🛠
-
-* Built **from scratch** to manage users, jobs, and applications
-
-✅ **Optimized Job Posting System**
-
-* Categories, salary details, job type, and location management
-* **Application tracking system** to view & manage applicants
-
-✅ **Newsletter Subscription** 📩
-
-* Users can subscribe to receive job updates
-
-✅ **Modern & Responsive UI**
-
-* Designed with **Bootstrap 5** for a clean and responsive experience
+🔥 **Now running in production on [Microsoft Azure](https://hirestream-h6f7gtd5azara2c9.westindia-01.azurewebsites.net/)** with a **high-performance database hosted on Aiven Console!**  
 
 ---
 
-## **🚀 Live Demo**
+## **🚀 Live Demo**  
 
-🔗 **[HireStream - Try it Now!](https://hstream.bsite.net/)**
+🔗 **[Try HireStream Now!](https://hirestream-h6f7gtd5azara2c9.westindia-01.azurewebsites.net/)**  
 
----
-
-## **🛠️ Tech Stack**
-
-| Technology                  | Description                      |
-| --------------------------- | -------------------------------- |
-| **ASP.NET Core MVC**  | Backend Framework                |
-| **.NET 8**            | Latest .NET version              |
-| **Bootstrap 5**       | Frontend UI Framework            |
-| **SQLite3**           | Lightweight database for testing |
-| **BCrypt**            | Secure password hashing          |
-| **DataProtectionAPI** | Secure token generation          |
+✅ **Test Admin Credentials:**  
+- **Email:** `admin@admin.com`  
+- **Password:** `adminuser`  
 
 ---
 
-## **👨‍💻 Project Team**
+## **📌 Key Features**  
 
-This project is a collaborative effort by:
+✅ **Secure & Scalable Authentication**  
+- **BCrypt-based password hashing**  
+- **Forgot password & password reset**  
+- **Edit profile & account settings**  
+- **Account deletion for privacy control**  
 
-* **Hafiz Abdul Hannan**
-* **Ismail Mehmood**
-* **Usman Shahid**
-* **Zaid Chughtai**
+✅ **Role-Based Controllers for Efficient Management**  
+- **Talent Controller** – For **Recruiters** to manage job listings  
+- **JobSeeker Controller** – For **Applicants** to search and apply for jobs  
 
-📌 **Submitted to:** *Prof. Asad Kamal  👉 **[Prof. Asad Kamal&#39;s LinkedIn Profile](https://www.linkedin.com/in/asad-kamal-44404b101/)***
+✅ **Advanced Job Search & Pagination**  
+- **Smart job filtering** by category, location, salary, and job type  
+- **Pagination for smooth browsing**  
+
+✅ **Dynamic Admin Panel** 🛠  
+- Custom-built **admin dashboard** to manage users, jobs, and applications  
+
+✅ **Optimized Job Posting System**  
+- **Categories, salary details, job type, and location fields**  
+- **Application tracking system** for recruiters  
+
+✅ **Newsletter Subscription** 📩  
+- Users can subscribe to job alerts  
+
+✅ **Production-Ready Deployment**  
+- **Hosted on Microsoft Azure** 🌐  
+- **Database powered by Aiven Console** for high availability  
+
+✅ **Modern & Responsive UI**  
+- Built with **Bootstrap 5** for a seamless experience  
 
 ---
 
-## **📖 How to Run Locally**
+## **🛠️ Tech Stack**  
 
-1️⃣ **Clone the repository**
+| Technology           | Description                                  |  
+|----------------------|----------------------------------------------|  
+| **ASP.NET Core MVC** | Backend framework for business logic        |  
+| **.NET 8**          | Latest .NET version for high performance     |  
+| **Bootstrap 5**     | Frontend UI framework for responsive design  |  
+| **MySQL (Aiven DB)** | Scalable, cloud-hosted database on Aiven    |  
+| **BCrypt**          | Secure password encryption                   |  
+| **Microsoft Azure** | Cloud hosting for reliability & scalability  |  
+
+---
+
+## **📖 How to Run Locally**  
+
+1️⃣ **Clone the repository**  
 
 ```sh
 git clone https://github.com/usman-s-mahmood/hire-stream-dotnet.git
 cd hire-stream-dotnet/HireStreamDotNetProject
-
 ```
 
-2️⃣ **Install dependencies**
+2️⃣ **Install dependencies**  
 
-Make sure you have **.NET 8 SDK** installed.
+Ensure you have **.NET 8 SDK** installed.  
 
 ```sh
 dotnet restore
 ```
 
-3️⃣ **Run the application**
+3️⃣ **Set up the database connection and Email Service**  
+
+Create a `db_secret.json` file in the project root with the following format:  
+
+```json
+{
+  "Server": "server.hosting.database.dummy.link",
+  "Port": "404405",
+  "Database": "yoursuperdb",
+  "User": "yourusername",
+  "Password": "your-secure-password",
+  "SslMode": "Required"
+}
+```
+
+Create a `secrets.json` file in the project root with the following format:  
+
+```json
+{
+    "Email": "youremail@example.com",
+    "Password": "your app password!",
+    "Host": "your.smtp.host.com"
+}
+```
+
+
+
+4️⃣ **Run the application**  
 
 ```sh
 dotnet run
 ```
 
-4️⃣ Open the browser and navigate to:
+5️⃣ Open your browser and go to:  
 
-👉 `http://localhost:5000`
-
----
-
-## **📌 Future Enhancements**
-
-* **AI-powered job recommendations**
-* **Resume Builder & Profile Strength Indicator**
-* **Real-time chat between recruiters & applicants**
+👉 `http://localhost:5000`  
 
 ---
 
-## **📜 License**
+## **👨‍💻 Project Team**  
 
-This project is **open-source** and available under the  **MIT License** .
+This project is a collaborative effort by:  
 
-use the login credentials (email: admin@admin.com, password: adminuser) to access the site completely!
+- **Hafiz Abdul Hannan**  
+- **Ismail Mehmood**  
+- **Usman Shahid**  
+- **Zaid Chughtai**  
+
+📌 **Submitted to:** *Prof. Asad Kamal 👉 [LinkedIn](https://www.linkedin.com/in/asad-kamal-44404b101/)*  
 
 ---
 
-🎯 **Start your job-hunting journey today!** Visit 👉 **[HireStream](https://hstream.bsite.net/)** 🚀
+## **📌 Future Enhancements**  
+
+🚀 **Upcoming features:**  
+✅ **AI-powered job recommendations**  
+✅ **Resume Builder & Profile Strength Indicator**  
+✅ **Real-time chat between recruiters & applicants**  
+
+---
+
+## **📜 License**  
+
+This project is **open-source** and available under the **MIT License**.  
+
+---
+
+🎯 **Start your job-hunting journey today!** Visit 👉 **[HireStream](https://hirestream-h6f7gtd5azara2c9.westindia-01.azurewebsites.net/)** 🚀  
+
+---

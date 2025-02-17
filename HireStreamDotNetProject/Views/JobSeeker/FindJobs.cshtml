@@ -7,23 +7,30 @@
 
 <div class="container-fluid">
     <div class="row p-3 border-dark">
-        <div class="col-md-8" >
-            @foreach (var i in ViewBag.Cards) {
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">@i.Title</h5>
-                        <p class="card-text">@i.JobCategory.Name</p>
-                        <p class="card-text">@i.JobType</p>
+        @if (ViewBag.CardCount != 0) {
+            <div class="col-md-8" >
+                @foreach (var i in ViewBag.Cards) {
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@i.Title</h5>
+                            <p class="card-text">@i.JobCategory.Name</p>
+                            <p class="card-text">@i.JobType</p>
+                        </div>
+                        <hr>
+                        <div class="text-center p-3">
+                            <a href="/JobSeeker/ViewPost/@i.Id" class="btn btn-success">View Details</a>
+                            <a href="/JobSeeker/ApplyNow?post_id=@i.Id" class="btn btn-success mx-1">Apply Now</a>
+                        </div>
                     </div>
                     <hr>
-                    <div class="text-center p-3">
-                        <a href="/JobSeeker/ViewPost/@i.Id" class="btn btn-success">View Details</a>
-                        <a href="/JobSeeker/ApplyNow?post_id=@i.Id" class="btn btn-success mx-1">Apply Now</a>
-                    </div>
-                </div>
-                <hr>
-            }
-        </div>
+                }
+            </div>
+        }
+        @if (ViewBag.CardCount == 0) {
+            <div class="col-md-8">
+                <p class="fs-4 text-center"><strong>No Records Found!</strong></p>
+            </div>
+        }
         <div class="col-md-4">
             <div class="row">
                 @await Html.PartialAsync("_SearchForm")

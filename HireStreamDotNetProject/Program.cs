@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,8 +37,19 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//     options.UseSqlite("Data Source=app.db"));
+
+var secretFilePath = "db_secret.json";
+var secrets = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(secretFilePath));
+
+string connectionString = $"Server={secrets["Server"]};Port={secrets["Port"]};Database={secrets["Database"]};User={secrets["User"]};Password={secrets["Password"]};SslMode={secrets["SslMode"]};";
+
+// Adding SQL Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite("Data Source=app.db"));
+    options.UseMySQL(connectionString));
+
+
 
 // Register the TokenService as a singleton
 builder.Services.AddSingleton<HireStreamDotNetProject.Utils.TokenService>();

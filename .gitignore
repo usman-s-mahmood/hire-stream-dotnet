@@ -21,6 +21,7 @@ node_modules/
 
 # secrets
 secrets.json
+db_secret.json
 
 # db temps
 *.db-shm
